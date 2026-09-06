@@ -37,7 +37,7 @@ func TestHandleIndex_RendersFile(t *testing.T) {
 	if !strings.Contains(string(body), "World.") {
 		t.Errorf("response missing slide content, got: %s", body)
 	}
-	if !strings.Contains(string(body), "/static/viewer.css") {
+	if !strings.Contains(string(body), "/static/css/tokens.css") {
 		t.Errorf("response missing static asset link, got: %s", body)
 	}
 }
@@ -53,9 +53,9 @@ func TestStaticAssetsServed(t *testing.T) {
 	ts := httptest.NewServer(srv.Handler())
 	defer ts.Close()
 
-	resp, err := http.Get(ts.URL + "/static/viewer.js")
+	resp, err := http.Get(ts.URL + "/static/js/main.js")
 	if err != nil {
-		t.Fatalf("GET /static/viewer.js: %v", err)
+		t.Fatalf("GET /static/js/main.js: %v", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {

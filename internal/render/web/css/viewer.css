@@ -1,0 +1,90 @@
+/* The "chrome" around the content: the PPT-style card frame, the
+   slide-change animation, and the HUD (page counter + theme toggle).
+   No layout.Kind-specific rules here — see layouts.css for those. */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg-stage);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* #stage is the full-viewport backdrop; #deck is the actual "slide" —
+   a fixed 16:9 card centered on it, like editing view in PowerPoint,
+   rather than the deck stretching edge to edge like a plain web page. */
+#stage {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vh 3vw;
+}
+
+#deck {
+  position: relative;
+  width: min(100%, 177.78vh); /* 16:9 capped by viewport height, not just width */
+  aspect-ratio: 16 / 9;
+  background: var(--bg-card);
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Every screen is stacked on top of each other inside the card; which
+   one is visible is purely a transform/opacity toggle, not display:none,
+   so the position change can animate. show() in js/nav.js assigns:
+     - .active   -> the current screen, centered
+     - .prev     -> screens before it, parked off-screen left
+     - (neither) -> screens after it, parked off-screen right (the default)
+   giving a left/right slide direction that matches actual nav direction. */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4% 6%;
+  overflow-y: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  pointer-events: none;
+}
+.screen.active {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.screen.prev {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen { transition: none; }
+}
+
+#hud {
+  position: fixed;
+  bottom: 1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#theme-toggle {
+  border: none;
+  background: var(--bg-card);
+  color: var(--fg);
+  border-radius: 999px;
+  width: 2rem;
+  height: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+#theme-toggle:hover { filter: brightness(1.1); }

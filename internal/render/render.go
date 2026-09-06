@@ -11,13 +11,16 @@ import (
 	"mdslides/internal/markdown"
 )
 
-//go:embed web/viewer.css web/viewer.js
+//go:embed web/css web/js
 var staticFiles embed.FS
 
 // StaticAssets holds the embedded CSS/JS the viewer needs, rooted so that
-// StaticAssets's "viewer.css" is web/viewer.css. The server mounts this
-// under /static/ without needing to know anything about what's inside —
-// HTTP routing doesn't require HTML/CSS knowledge.
+// StaticAssets's "css/tokens.css" is web/css/tokens.css. The server mounts
+// this under /static/ without needing to know anything about what's
+// inside — HTTP routing doesn't require HTML/CSS/JS knowledge. Embedding
+// the two directories (rather than listing every file) means a new CSS
+// or JS file under web/css or web/js is picked up automatically, no
+// go:embed edit needed.
 var StaticAssets = mustSub(staticFiles, "web")
 
 func mustSub(f embed.FS, dir string) fs.FS {

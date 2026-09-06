@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{.Title}}</title>
-<link rel="stylesheet" href="/static/viewer.css">
+<link rel="stylesheet" href="/static/css/tokens.css">
+<link rel="stylesheet" href="/static/css/layouts.css">
+<link rel="stylesheet" href="/static/css/viewer.css">
 </head>
 <body>
+<div id="stage">
 <div id="deck">
 {{range $i, $s := .Screens}}<section class="screen layout-{{$s.Layout}}{{if $s.ImagesFirst}} images-first{{end}}" data-index="{{$i}}">
 {{if $s.Heading}}<h1 class="screen-heading">{{$s.Heading}}</h1>{{end}}
@@ -16,7 +19,11 @@
 </div>
 </section>
 {{end}}</div>
-<div id="hud"><span id="counter"></span></div>
-<script src="/static/viewer.js"></script>
+</div>
+<div id="hud">
+<button id="theme-toggle" type="button" aria-label="Toggle light/dark theme">&#9789;</button>
+<span id="counter"></span>
+</div>
+<script type="module" src="/static/js/main.js"></script>
 </body>
 </html>

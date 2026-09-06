@@ -1,0 +1,38 @@
+/* Theme tokens only — no layout, no components. Every other CSS file
+   reads these custom properties instead of hardcoding a color, so the
+   light/dark switch (in viewer.css + js/theme.js) only has to change
+   values in one place.
+
+   Three states, same pattern used for the light/dark toggle everywhere
+   in this project: bare :root is the light default; the prefers-color-
+   scheme block covers "system says dark, user hasn't overridden it";
+   the [data-theme="dark"] block covers "user explicitly chose dark" and
+   wins over system preference either way. */
+:root {
+  color-scheme: light dark;
+  --bg-stage: #e8e8ec;
+  --bg-card: #ffffff;
+  --fg: #111111;
+  --muted: #666666;
+  --accent: #2563eb;
+  --gap: 1.5rem;
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-stage: #08080a;
+    --bg-card: #17181c;
+    --fg: #f2f2f2;
+    --muted: #999999;
+    --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg-stage: #08080a;
+  --bg-card: #17181c;
+  --fg: #f2f2f2;
+  --muted: #999999;
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
