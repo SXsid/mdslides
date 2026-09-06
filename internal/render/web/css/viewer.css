@@ -46,13 +46,19 @@ html, body {
      - .prev     -> screens before it, parked off-screen left
      - (neither) -> screens after it, parked off-screen right (the default)
    giving a left/right slide direction that matches actual nav direction. */
+/* .screen itself does NOT scroll — only .screen-body does (its
+   flex:0 0 auto / overflow-y:auto split is in layouts.css, right next
+   to .screen-heading's other rules). A long slide used to scroll the
+   whole section including the heading, so reading down lost the
+   title; now the heading stays pinned and only the content below it
+   moves. */
 .screen {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding: 4% 6%;
-  overflow-y: auto;
+  padding: 4% 6% 0;
+  overflow: hidden;
   transform: translateX(100%);
   opacity: 0;
   transition: transform 0.35s ease, opacity 0.35s ease;

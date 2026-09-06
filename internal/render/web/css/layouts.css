@@ -2,8 +2,20 @@
    internal/layout/layout.go's Classify(). Only grid shapes live here;
    the card frame, theme, and animation are viewer.css's job. */
 
-.screen-heading { font-size: clamp(1.5rem, 4vw, 2.25rem); margin: 0 0 1rem; line-height: 1.2; }
-.screen-body { flex: 1; display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
+/* flex: 0 0 auto pins the heading at its natural size so it never
+   shrinks or scrolls; .screen-body takes the rest of the height and
+   is the only part that scrolls (padding-bottom replaces the bottom
+   padding .screen used to provide before it stopped scrolling). */
+.screen-heading { flex: 0 0 auto; font-size: clamp(1.5rem, 4vw, 2.25rem); margin: 0 0 1rem; line-height: 1.2; }
+.screen-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 4%;
+}
 img { max-width: 100%; display: block; }
 
 /* A table can show up inside any layout kind's ContentHTML — goldmark
@@ -26,11 +38,20 @@ img { max-width: 100%; display: block; }
   background: color-mix(in srgb, var(--fg) 4%, transparent);
 }
 
-/* 0 images: text fills the screen, centered for readability */
+/* 0 images: text fills the screen, centered for readability when it's
+   short. justify-content: center has a classic flexbox bug: if the
+   content is taller than the box, the overflow is split evenly above
+   *and* below, and browsers won't scroll into the part that overflows
+   upward — the start of the text becomes unreachable. "safe center"
+   is the fix (falls back to flex-start instead of clipping when it
+   doesn't fit); declared after the plain "center" so a browser that
+   doesn't understand the two-value form just keeps the line above
+   instead of dropping centering entirely. */
 .layout-text .screen-body {
   max-width: 65ch;
   margin: 0 auto;
   justify-content: center;
+  justify-content: safe center;
   font-size: 1.15rem;
 }
 
