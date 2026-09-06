@@ -1,138 +1,123 @@
 # mdslides
 
-Turn a Markdown file into a PPT-style browser deck. One `#` heading = one
-slide; standalone images get pulled out of the text and arranged
-automatically (side-by-side, stacked, or a bento grid) based on how many
-there are. A `---` anywhere in a section forces a manual page break, as an
-override to the automatic layout. Live-reloads in the browser as you edit.
+**Turn a Markdown file into a live, presentable deck — no slide software,
+no export step, no leaving your editor.**
+
+Write your design doc, your runbook, your team update the way you already
+write everything: as a `.md` file. Run one command, and it becomes a
+keyboard-navigable, PPT-style deck in your browser that updates the moment
+you hit save.
 
 ```
 go build -o mdslides ./cmd/mdslides
-./mdslides testdata/sample.md
+./mdslides your-notes.md
 ```
 
-Full design rationale is in [`docs/HLD.md`](docs/HLD.md). This README is
-the architecture walkthrough — read this to understand how the pieces fit
-together and why they're split the way they are.
+That's the whole setup. One static binary, no npm, no build step, no
+account, nothing phoning home.
 
-## Architecture
+## Why
+
+Design docs and READMEs already hold the content of a presentation —
+headings, a few images, some structure. Recreating that in slide software
+is duplicated work, and the moment the doc changes, the slides drift out
+of sync. mdslides skips the duplication: the Markdown file *is* the deck,
+always current, editable in whatever tool you already write Markdown in.
+
+## Features
+
+- **Headings become slides.** Every `#` heading starts a new slide — no
+  extra syntax to learn for the common case.
+- **Images arrange themselves.** One image, and it sits beside your text.
+  Two, three, four — mdslides picks a side-by-side, stacked, or bento grid
+  layout automatically, so you never hand-write CSS to make a screenshot
+  look right. More than four, and the rest flow onto their own page under
+  the same heading instead of overcrowding one screen.
+- **`---` for manual control.** Don't like the automatic split? Drop in a
+  thematic break anywhere and force a new page yourself.
+- **Diagrams, not diagram *descriptions*.** A ` ```mermaid ` fenced code
+  block — flowcharts, sequence diagrams, and everything else Mermaid
+  supports — renders as a real diagram, not a code block.
+- **GitHub-flavored Markdown.** Tables, strikethrough, and task lists all
+  render properly, not as literal pipe characters.
+- **Live reload.** Edit the source file in any editor; the browser tab
+  updates on save. No extension required — it's built into the server.
+- **Light and dark themes.** Follows your OS preference by default, with a
+  toggle to override it, remembered across reloads.
+- **One binary.** Every asset (HTML, CSS, JS, templates) is compiled in
+  via `go:embed`. Copy the binary anywhere; there's nothing else to ship.
+
+## Usage
 
 ```
-[file.md]
-    v
-markdown.ParseFile   -- goldmark AST walk. Emits a Deck: Slides, each with
-                         one or more Pages (text + standalone images).
-    v
-layout.Classify      -- pure function: image count -> grid shape (Kind).
-    v
-render.HTML          -- Deck + layout decisions -> one HTML document.
-    v
-server.Server        -- serves that HTML, watches the file, pushes
-                         "reload" over SSE when it changes.
-    v
-[browser + viewer.js] -- keyboard nav between pages, live reload
+./mdslides <file.md> [-port 8080] [-no-open]
 ```
 
-**The dependency direction only ever goes one way, top to bottom:**
-`server` imports `render` and `markdown` and defines its own
-`SourceWatcher`; `render` imports `markdown` and `layout`; `layout` and
-`markdown` import nothing of each other, or of anything below them. Nothing
-downstream is ever imported by something upstream. That's not a style
-preference — it's what makes each package testable by itself: `layout`'s
-tests don't need a Markdown file, `markdown`'s tests don't need HTML, and
-`server`'s tests don't need a real filesystem (see the interface note
-below).
+| Flag | Default | Meaning |
+|---|---|---|
+| `-port` | `8080` | Port to serve the deck on |
+| `-no-open` | off | Don't launch a browser automatically |
 
-**Why each boundary is where it is:**
-- `internal/markdown` is the only package that knows Markdown syntax
-  exists. It hands everything else a plain `Deck` of Go structs.
-- `internal/layout` knows nothing about Markdown, HTML, or HTTP — `Classify`
-  is a pure function of an integer, on purpose, so every case is
-  exhaustively unit-tested and nothing needs to import it just to reuse the
-  logic.
-- `internal/render` is the only package that knows HTML exists. It's also
-  the only package that imports *both* `markdown` and `layout` — that's
-  deliberate: deciding what to do with a page that has more images than
-  fit one grid (`layout.MaxPerPage`) happens here, at render time, not in
-  the parser. If the parser had to ask the layout engine "how many images
-  fit," that would be a dependency running backward against the data flow.
-- `internal/server` is the only package that knows HTTP, SSE, and
-  filesystem watching exist. `cmd/mdslides/main.go` does nothing but parse
-  flags and wire this together — if real logic starts accumulating in
-  `main.go`, that's the signal something is in the wrong package.
+**In the browser:** `→` / `Space` for the next slide, `←` for the previous
+one, `Home`/`End` to jump to the first/last, and the moon/sun button
+(bottom right) to toggle the theme.
 
-## The one interface in this codebase
+## Writing decks
 
-Go idiom is "accept interfaces, return structs" — but that's not a rule to
-apply everywhere; it's a rule for exactly the situation where a second
-implementation is real. Here, that's file watching:
+You're writing plain Markdown — this is the part that's specific to how
+mdslides interprets it:
 
-```go
-type SourceWatcher interface {
-    Changes() <-chan struct{}
-    Close() error
-}
+````markdown
+# A slide
+
+Regular text, lists, tables, and code all render normally.
+
+![a diagram](diagram.png)
+
+An image on its own line is pulled out and placed next to the text
+automatically — add three more on consecutive lines and you get a grid.
+
+---
+
+A `---` starts a new page under the same heading, on demand.
+
+```mermaid
+graph TD
+    A[Write Markdown] --> B[Run mdslides]
+    B --> C[Present it]
+```
+````
+
+See [`testdata/sample.md`](testdata/sample.md) for a file exercising every
+layout and Markdown feature at once — a good reference while writing your
+own.
+
+## How it's built
+
+mdslides is also a from-scratch example of a small Go CLI structured
+around clean package boundaries — parser, layout engine, renderer, and
+server each own exactly one concern, with a documented reason for every
+boundary. If you're reading the source to learn from it (or to extend
+it), start with [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); the
+product-level design reasoning (why automatic image layout works the way
+it does, why `---` exists) is in [`docs/HLD.md`](docs/HLD.md).
+
+## Contributing
+
+```
+make check   # gofmt, go vet, go test, go build — the same sequence CI would run
+make demo    # build and run against testdata/sample.md
 ```
 
-`server.Server` depends on this interface, not on `fsnotify` directly. The
-real implementation (`NewFSWatcher`, in `internal/server/watch.go`) wraps
-`fsnotify`; `internal/server/watch_test.go` uses a `fakeWatcher` that
-satisfies the same interface and lets a test fire a "changed" event on
-command — no real file, no waiting on real filesystem event timing.
+`docs/ARCHITECTURE.md` ends with a set of scoped exercises (adding a
+second `SourceWatcher` implementation, threading a new CLI flag through
+the pipeline, adding speaker notes) if you're looking for a well-defined
+first change to make.
 
-`layout` and `markdown` deliberately have **no** interfaces: there's only
-ever one way to "parse markdown" or "classify an image count" in this
-program, and an interface with one implementation is decoration, not
-design. The contrast is the lesson — reach for an interface where a second
-implementation is real (a fake for tests, or a genuine alternative), not by
-default.
+Editor integrations (a VS Code extension, a Neovim plugin) that shell out
+to this binary are the natural next layer, not yet built — contributions
+there are especially welcome.
 
-## Request lifecycle
+## License
 
-1. Browser requests `GET /`.
-2. `server.handleIndex` calls `markdown.ParseFile(path)` — re-parsed fresh
-   every request. Wasteful at scale; correct here, because live-reload
-   needs zero cache invalidation logic this way — the next request just
-   sees whatever is on disk now.
-3. `render.HTML(deck)` walks every `Slide`'s `Page`s. A page within
-   `layout.MaxPerPage` (4) images renders as one `<section>`; beyond that,
-   the extra images become their own images-only "(cont.)" screens
-   (`render.screensForPage`).
-4. The browser gets one HTML document with every screen already in it;
-   `viewer.js` just toggles which `.screen` has the `.active` class based
-   on arrow-key/space input and the `#/<n>` URL hash.
-5. Separately, `viewer.js` opens `GET /events` (Server-Sent Events).
-   `server.handleEvents` blocks on `SourceWatcher.Changes()`; `NewFSWatcher`
-   watches the file's *directory*, not the file itself, because editors
-   that save via write-temp-then-rename (vim included) replace the inode a
-   direct file watch points at, silently killing it after the first save.
-   On a change, the server pushes `data: reload`, and `viewer.js` just
-   reloads the page.
-
-## Exercises
-
-Sized to exercise a specific skill each, meant for you to implement:
-
-1. **Warm-up.** Add a table-driven case for a 5-image slide to
-   `internal/layout/layout_test.go` confirming it still clamps to `Bento4`.
-   Confirms you can follow the existing pattern before changing anything.
-2. **CLI flag → data flow.** Add `-theme light|dark` to `main.go`, thread
-   it through `render.HTML` into the template (a `Theme` field on the
-   `document` struct, a `data-theme` attribute on `<html>`, matching CSS in
-   `viewer.css`). No new packages needed — just follow one value through
-   the pipeline that already exists.
-3. **Second interface implementation.** Add a polling-based fallback
-   `SourceWatcher` (stat the file on a ticker, compare mtimes) for
-   filesystems where `fsnotify` misbehaves (some network mounts), selected
-   with a flag. This is the exercise that actually uses the interface
-   boundary — right now there's only ever been one real implementation.
-4. **New feature along existing seams.** Speaker notes: parse a trailing
-   `<!-- note: ... -->` HTML comment out of a slide in `internal/markdown`,
-   carry it as a new `Slide.Notes` field, render it into a toggle-able pane
-   in `viewer.js`. Touches three packages along their existing boundaries —
-   a good test of whether the separation actually holds up under a real
-   change, or whether it turns out you need to reach across a boundary
-   that shouldn't exist.
-5. **Bridge to "later."** A five-line VS Code `tasks.json` (or Neovim
-   keymap) that shells out to the built `mdslides` binary on the current
-   file. The on-ramp to a real extension/plugin, once this is solid.
+MIT — see [`LICENSE`](LICENSE).

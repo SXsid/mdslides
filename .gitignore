@@ -1,2 +1,7 @@
 /mdslides
 /bin/
+
+# Real working docs used as personal test fixtures — not example/demo
+# content for the repo, so they don't belong in git history.
+/testdata/calling_ui_user_flow.md
+/testdata/how_voip_works.md

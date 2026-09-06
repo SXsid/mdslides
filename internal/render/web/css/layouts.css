@@ -18,6 +18,13 @@
 }
 img { max-width: 100%; display: block; }
 
+/* js/diagrams.js replaces a ```mermaid fence with a div.mermaid, then
+   Mermaid injects an <svg> into it. Centered, and capped to the
+   available width/height so a large diagram scales down to fit the
+   card instead of forcing the whole page wider. */
+.mermaid { display: flex; justify-content: center; }
+.mermaid svg { max-width: 100%; max-height: 60vh; height: auto; }
+
 /* A table can show up inside any layout kind's ContentHTML — goldmark
    emits a bare <table> with no styling at all, so left alone it's just
    unbordered browser-default text. color-mix() derives the border/
