@@ -76,6 +76,71 @@ func TestParse_HeadingKeepsFormattingInHTMLButNotInPlainText(t *testing.T) {
 	}
 }
 
+func TestParse_ThematicBreakStartsNewPage(t *testing.T) {
+	source := []byte("# Title\nPage one text.\n\n---\n\nPage two text.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(deck.Slides) != 1 {
+		t.Fatalf("got %d slides, want 1", len(deck.Slides))
+	}
+	pages := deck.Slides[0].Pages
+	if len(pages) != 2 {
+		t.Fatalf("got %d pages, want 2", len(pages))
+	}
+	if !strings.Contains(string(pages[0].ContentHTML), "Page one text.") {
+		t.Errorf("page 0 = %q, want it to contain %q", pages[0].ContentHTML, "Page one text.")
+	}
+	if strings.Contains(string(pages[0].ContentHTML), "Page two text.") {
+		t.Errorf("page 0 = %q, page two text leaked into it", pages[0].ContentHTML)
+	}
+	if !strings.Contains(string(pages[1].ContentHTML), "Page two text.") {
+		t.Errorf("page 1 = %q, want it to contain %q", pages[1].ContentHTML, "Page two text.")
+	}
+}
+
+func TestParse_LeadingThematicBreakIsNoOp(t *testing.T) {
+	source := []byte("# Title\n\n---\n\nBody.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	pages := deck.Slides[0].Pages
+	if len(pages) != 1 {
+		t.Fatalf("got %d pages, want 1 (leading --- should not create a blank page)", len(pages))
+	}
+	if !strings.Contains(string(pages[0].ContentHTML), "Body.") {
+		t.Errorf("page 0 = %q, want it to contain %q", pages[0].ContentHTML, "Body.")
+	}
+}
+
+func TestParse_ConsecutiveThematicBreaksCollapse(t *testing.T) {
+	source := []byte("# Title\nA.\n\n---\n\n---\n\nB.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	pages := deck.Slides[0].Pages
+	if len(pages) != 2 {
+		t.Fatalf("got %d pages, want 2 (the second --- had nothing to break)", len(pages))
+	}
+}
+
+func TestParse_HeadingWithNoContentStillYieldsOnePage(t *testing.T) {
+	source := []byte("# Empty Title\n\n# Next\nBody.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(deck.Slides) != 2 {
+		t.Fatalf("got %d slides, want 2", len(deck.Slides))
+	}
+	if len(deck.Slides[0].Pages) != 1 {
+		t.Fatalf("empty slide got %d pages, want 1 (heading should stay visible)", len(deck.Slides[0].Pages))
+	}
+}
+
 func TestParse_H2DoesNotStartNewSlide(t *testing.T) {
 	source := []byte("# Title\nIntro.\n\n## Subsection\nMore detail.\n")
 	deck, err := Parse(source)

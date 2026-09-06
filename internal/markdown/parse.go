@@ -24,34 +24,55 @@ func ParseFile(path string) (Deck, error) {
 }
 
 // Parse turns raw Markdown source into a Deck: every H1 heading starts a
-// new Slide, and every other top-level block under that heading is
-// rendered as-is into that Slide's single Page.
+// new Slide, and a thematic break (---) starts a new Page within the
+// current Slide — an explicit, author-controlled alternative to letting
+// the layout engine decide every page boundary by image count alone.
 //
-// This is step 1 of the parser: it proves the tree-walk finds slide
-// boundaries correctly. Thematic-break page splitting and standalone-image
-// extraction are deliberately not handled yet — they're separate, later
-// changes to this same function so each behavior can be tested in
-// isolation.
+// Standalone-image extraction is still a later step: for now every block
+// (including images) renders straight through into the current Page's
+// ContentHTML.
 func Parse(source []byte) (Deck, error) {
 	md := goldmark.New()
 	doc := md.Parser().Parse(text.NewReader(source))
 
 	var deck Deck
 	var current *Slide
+	var pages []Page
 	var body bytes.Buffer
 
-	flush := func() {
+	// flushPage closes out whatever content has accumulated for the page
+	// in progress. It's a deliberate no-op on an empty buffer, so a
+	// thematic break with nothing before it (right after a heading, or
+	// right after another thematic break) doesn't manufacture a blank
+	// page — there's nothing to "break" yet.
+	flushPage := func() {
+		if body.Len() == 0 {
+			return
+		}
+		pages = append(pages, Page{ContentHTML: template.HTML(body.String())})
+		body.Reset()
+	}
+
+	// flushSlide closes out the slide in progress. Unlike flushPage, it
+	// guarantees at least one Page even if the slide had zero content —
+	// a heading the author just started should still appear in the deck,
+	// not silently vanish because there's nothing under it yet.
+	flushSlide := func() {
 		if current == nil {
 			return
 		}
-		current.Pages = []Page{{ContentHTML: template.HTML(body.String())}}
+		flushPage()
+		if len(pages) == 0 {
+			pages = []Page{{}}
+		}
+		current.Pages = pages
 		deck.Slides = append(deck.Slides, *current)
-		body.Reset()
+		pages = nil
 	}
 
 	for n := doc.FirstChild(); n != nil; n = n.NextSibling() {
 		if h, ok := n.(*ast.Heading); ok && h.Level == 1 {
-			flush()
+			flushSlide()
 			heading := headingText(h, source)
 			if deck.Title == "" {
 				deck.Title = heading
@@ -63,6 +84,10 @@ func Parse(source []byte) (Deck, error) {
 			current = &Slide{Heading: heading, HeadingHTML: headingHTML}
 			continue
 		}
+		if _, ok := n.(*ast.ThematicBreak); ok {
+			flushPage()
+			continue
+		}
 		if current == nil {
 			// Content before the first H1 has no slide to belong to.
 			// Skip it rather than inventing an untitled slide for it.
@@ -72,7 +97,7 @@ func Parse(source []byte) (Deck, error) {
 			return Deck{}, fmt.Errorf("render block under slide %q: %w", current.Heading, err)
 		}
 	}
-	flush()
+	flushSlide()
 
 	return deck, nil
 }
