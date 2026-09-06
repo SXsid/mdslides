@@ -13,7 +13,7 @@ func TestClassify(t *testing.T) {
 		{2, Stack},
 		{3, Bento3},
 		{4, Bento4},
-		{5, Bento4},  // beyond MaxPerPage: clamps, doesn't error — renderer's job to have split first
+		{5, Bento4}, // beyond MaxPerPage: clamps, doesn't error — renderer's job to have split first
 		{12, Bento4},
 	}
 	for _, c := range cases {

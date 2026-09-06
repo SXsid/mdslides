@@ -40,7 +40,7 @@ func TestHTML_TitleAndTextOnlySlide(t *testing.T) {
 func TestHTML_OverflowImagesSplitIntoContinuationScreens(t *testing.T) {
 	images := make([]markdown.Image, 6)
 	for i := range images {
-		images[i] = markdown.Image{Src: string(rune('a' + i)) + ".png"}
+		images[i] = markdown.Image{Src: string(rune('a'+i)) + ".png"}
 	}
 	deck := markdown.Deck{
 		Slides: []markdown.Slide{
