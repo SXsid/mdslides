@@ -14,8 +14,16 @@ type Deck struct {
 // thematic break (---), or the layout engine can split it automatically
 // when there are too many images to fit one screen.
 type Slide struct {
+	// Heading is plain text, no markup — for consumers that can't hold
+	// HTML: Deck.Title, a future URL anchor/slug, aria-labels, etc.
 	Heading string
-	Pages   []Page
+	// HeadingHTML is the same heading with inline formatting preserved
+	// (emphasis, code spans, links) — for actually displaying the heading
+	// on screen. Two fields because the two consumers have opposite
+	// requirements: one must be a bare string, the other should look
+	// like what the author wrote.
+	HeadingHTML template.HTML
+	Pages       []Page
 }
 
 // Page is exactly one screen the viewer will show. ContentHTML holds every

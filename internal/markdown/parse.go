@@ -8,6 +8,7 @@ import (
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
 )
 
@@ -55,7 +56,11 @@ func Parse(source []byte) (Deck, error) {
 			if deck.Title == "" {
 				deck.Title = heading
 			}
-			current = &Slide{Heading: heading}
+			headingHTML, err := renderInlineChildren(md.Renderer(), source, h)
+			if err != nil {
+				return Deck{}, fmt.Errorf("render heading %q: %w", heading, err)
+			}
+			current = &Slide{Heading: heading, HeadingHTML: headingHTML}
 			continue
 		}
 		if current == nil {
@@ -80,6 +85,21 @@ func headingText(h *ast.Heading, source []byte) string {
 		collectText(n, source, &buf)
 	}
 	return buf.String()
+}
+
+// renderInlineChildren renders a block node's inline children (text,
+// emphasis, links, code spans, ...) to HTML without the block's own
+// wrapping tag — e.g. for a Heading node this yields "<em>Setup</em>", not
+// "<h1><em>Setup</em></h1>". The caller decides the wrapping tag and CSS
+// class, since that's presentation, not content.
+func renderInlineChildren(r renderer.Renderer, source []byte, block ast.Node) (template.HTML, error) {
+	var buf bytes.Buffer
+	for n := block.FirstChild(); n != nil; n = n.NextSibling() {
+		if err := r.Render(&buf, source, n); err != nil {
+			return "", err
+		}
+	}
+	return template.HTML(buf.String()), nil
 }
 
 func collectText(n ast.Node, source []byte, buf *bytes.Buffer) {

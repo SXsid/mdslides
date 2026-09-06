@@ -54,6 +54,28 @@ func TestParse_EmptySourceProducesNoSlides(t *testing.T) {
 	}
 }
 
+func TestParse_HeadingKeepsFormattingInHTMLButNotInPlainText(t *testing.T) {
+	source := []byte("# *Setup* and `config`\nBody.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	slide := deck.Slides[0]
+	if slide.Heading != "Setup and config" {
+		t.Errorf("Heading = %q, want plain text %q", slide.Heading, "Setup and config")
+	}
+	html := string(slide.HeadingHTML)
+	if !strings.Contains(html, "<em>Setup</em>") {
+		t.Errorf("HeadingHTML = %q, want it to contain <em>Setup</em>", html)
+	}
+	if !strings.Contains(html, "<code>config</code>") {
+		t.Errorf("HeadingHTML = %q, want it to contain <code>config</code>", html)
+	}
+	if strings.Contains(html, "<h1") {
+		t.Errorf("HeadingHTML = %q, should not include the outer <h1> — that's the renderer's job", html)
+	}
+}
+
 func TestParse_H2DoesNotStartNewSlide(t *testing.T) {
 	source := []byte("# Title\nIntro.\n\n## Subsection\nMore detail.\n")
 	deck, err := Parse(source)
