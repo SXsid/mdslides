@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="/static/viewer.css">
+</head>
+<body>
+<div id="deck">
+{{range $i, $s := .Screens}}<section class="screen layout-{{$s.Layout}}{{if $s.ImagesFirst}} images-first{{end}}" data-index="{{$i}}">
+{{if $s.Heading}}<h1 class="screen-heading">{{$s.Heading}}</h1>{{end}}
+<div class="screen-body">
+{{if $s.ContentHTML}}<div class="screen-content">{{$s.ContentHTML}}</div>{{end}}
+{{if $s.Images}}<div class="screen-images">{{range $s.Images}}<img src="{{.Src}}" alt="{{.Alt}}">{{end}}</div>{{end}}
+</div>
+</section>
+{{end}}</div>
+<div id="hud"><span id="counter"></span></div>
+<script src="/static/viewer.js"></script>
+</body>
+</html>
