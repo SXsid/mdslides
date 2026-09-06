@@ -141,6 +141,69 @@ func TestParse_HeadingWithNoContentStillYieldsOnePage(t *testing.T) {
 	}
 }
 
+func TestParse_StandaloneImageIsPulledOutOfContent(t *testing.T) {
+	source := []byte("# Title\n![a diagram](diagram.png)\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	page := deck.Slides[0].Pages[0]
+	if len(page.Images) != 1 {
+		t.Fatalf("got %d images, want 1", len(page.Images))
+	}
+	if page.Images[0].Src != "diagram.png" || page.Images[0].Alt != "a diagram" {
+		t.Errorf("image = %+v, want Src=diagram.png Alt=%q", page.Images[0], "a diagram")
+	}
+	if strings.Contains(string(page.ContentHTML), "<img") {
+		t.Errorf("ContentHTML = %q, standalone image should not also render inline", page.ContentHTML)
+	}
+}
+
+func TestParse_ConsecutiveImagesInOneParagraphAllExtracted(t *testing.T) {
+	source := []byte("# Title\n![a](1.png)\n![b](2.png)\n![c](3.png)\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	page := deck.Slides[0].Pages[0]
+	if len(page.Images) != 3 {
+		t.Fatalf("got %d images, want 3 (consecutive lines, no blank line, should all count)", len(page.Images))
+	}
+}
+
+func TestParse_InlineImageInsideSentenceStaysInline(t *testing.T) {
+	source := []byte("# Title\nSee the ![icon](icon.png) next to this word.\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	page := deck.Slides[0].Pages[0]
+	if len(page.Images) != 0 {
+		t.Fatalf("got %d extracted images, want 0 (image is inside a sentence, not standalone)", len(page.Images))
+	}
+	if !strings.Contains(string(page.ContentHTML), "<img") {
+		t.Errorf("ContentHTML = %q, want the inline image to still render in place", page.ContentHTML)
+	}
+}
+
+func TestParse_ImagesFirstReflectsSourceOrder(t *testing.T) {
+	imageFirst, err := Parse([]byte("# Title\n![a](1.png)\n\nSome text after.\n"))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if !imageFirst.Slides[0].Pages[0].ImagesFirst {
+		t.Errorf("ImagesFirst = false, want true when the image comes before the text")
+	}
+
+	textFirst, err := Parse([]byte("# Title\nSome text before.\n\n![a](1.png)\n"))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if textFirst.Slides[0].Pages[0].ImagesFirst {
+		t.Errorf("ImagesFirst = true, want false when the text comes before the image")
+	}
+}
+
 func TestParse_H2DoesNotStartNewSlide(t *testing.T) {
 	source := []byte("# Title\nIntro.\n\n## Subsection\nMore detail.\n")
 	deck, err := Parse(source)

@@ -24,13 +24,10 @@ func ParseFile(path string) (Deck, error) {
 }
 
 // Parse turns raw Markdown source into a Deck: every H1 heading starts a
-// new Slide, and a thematic break (---) starts a new Page within the
-// current Slide — an explicit, author-controlled alternative to letting
-// the layout engine decide every page boundary by image count alone.
-//
-// Standalone-image extraction is still a later step: for now every block
-// (including images) renders straight through into the current Page's
-// ContentHTML.
+// new Slide, a thematic break (---) starts a new Page within the current
+// Slide, and a paragraph containing nothing but image(s) is pulled out of
+// the text flow into that Page's Images — everything else renders straight
+// through as ContentHTML, unmodeled, via goldmark's own renderer.
 func Parse(source []byte) (Deck, error) {
 	md := goldmark.New()
 	doc := md.Parser().Parse(text.NewReader(source))
@@ -39,18 +36,28 @@ func Parse(source []byte) (Deck, error) {
 	var current *Slide
 	var pages []Page
 	var body bytes.Buffer
+	var pageImages []Image
+	var pageImagesFirst bool
+	var pageContentStarted bool // true once a non-image block has rendered into body
 
 	// flushPage closes out whatever content has accumulated for the page
-	// in progress. It's a deliberate no-op on an empty buffer, so a
-	// thematic break with nothing before it (right after a heading, or
-	// right after another thematic break) doesn't manufacture a blank
-	// page — there's nothing to "break" yet.
+	// in progress. It's a deliberate no-op when there's neither text nor
+	// images yet, so a thematic break with nothing before it (right after
+	// a heading, or right after another thematic break) doesn't
+	// manufacture a blank page.
 	flushPage := func() {
-		if body.Len() == 0 {
+		if body.Len() == 0 && len(pageImages) == 0 {
 			return
 		}
-		pages = append(pages, Page{ContentHTML: template.HTML(body.String())})
+		pages = append(pages, Page{
+			ContentHTML: template.HTML(body.String()),
+			Images:      pageImages,
+			ImagesFirst: pageImagesFirst,
+		})
 		body.Reset()
+		pageImages = nil
+		pageImagesFirst = false
+		pageContentStarted = false
 	}
 
 	// flushSlide closes out the slide in progress. Unlike flushPage, it
@@ -93,6 +100,19 @@ func Parse(source []byte) (Deck, error) {
 			// Skip it rather than inventing an untitled slide for it.
 			continue
 		}
+		if p, ok := n.(*ast.Paragraph); ok && isImageOnlyParagraph(p, source) {
+			imgs := extractImages(p, source)
+			if len(pageImages) == 0 {
+				// Only the very first image (of the whole page) decides
+				// ImagesFirst — later image-only paragraphs on the same
+				// page just add more images, they don't change the order
+				// decision that was already made.
+				pageImagesFirst = !pageContentStarted
+			}
+			pageImages = append(pageImages, imgs...)
+			continue
+		}
+		pageContentStarted = true
 		if err := md.Renderer().Render(&body, source, n); err != nil {
 			return Deck{}, fmt.Errorf("render block under slide %q: %w", current.Heading, err)
 		}
@@ -125,6 +145,51 @@ func renderInlineChildren(r renderer.Renderer, source []byte, block ast.Node) (t
 		}
 	}
 	return template.HTML(buf.String()), nil
+}
+
+// isImageOnlyParagraph reports whether a paragraph is nothing but image(s)
+// — no surrounding sentence, so it should be pulled out for the layout
+// engine instead of staying inline in the text. This also matches multiple
+// images written on consecutive lines with no blank line between them
+// (a very natural way to type "here are 3 photos"): goldmark represents
+// the line break between them as a Text node with an empty segment, not a
+// separate node kind, so an empty/whitespace-only Text is still "image
+// only" — any Text with real characters is not.
+func isImageOnlyParagraph(p *ast.Paragraph, source []byte) bool {
+	sawImage := false
+	for n := p.FirstChild(); n != nil; n = n.NextSibling() {
+		switch child := n.(type) {
+		case *ast.Image:
+			sawImage = true
+		case *ast.Text:
+			if len(bytes.TrimSpace(child.Segment.Value(source))) > 0 {
+				return false
+			}
+		default:
+			// A link wrapping the image, emphasis, etc. — treat as real
+			// content for now rather than guessing it's decorative.
+			return false
+		}
+	}
+	return sawImage
+}
+
+// extractImages reads every Image child out of a paragraph already
+// confirmed image-only by isImageOnlyParagraph.
+func extractImages(p *ast.Paragraph, source []byte) []Image {
+	var images []Image
+	for n := p.FirstChild(); n != nil; n = n.NextSibling() {
+		img, ok := n.(*ast.Image)
+		if !ok {
+			continue
+		}
+		var alt bytes.Buffer
+		for c := img.FirstChild(); c != nil; c = c.NextSibling() {
+			collectText(c, source, &alt)
+		}
+		images = append(images, Image{Src: string(img.Destination), Alt: alt.String()})
+	}
+	return images
 }
 
 func collectText(n ast.Node, source []byte, buf *bytes.Buffer) {
