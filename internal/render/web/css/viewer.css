@@ -9,7 +9,7 @@ html, body {
   height: 100%;
   background: var(--bg-stage);
   color: var(--fg);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
 }
 
 /* #stage is the full-viewport backdrop; #deck is the actual "slide" —

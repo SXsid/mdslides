@@ -6,7 +6,14 @@
    shrinks or scrolls; .screen-body takes the rest of the height and
    is the only part that scrolls (padding-bottom replaces the bottom
    padding .screen used to provide before it stopped scrolling). */
-.screen-heading { flex: 0 0 auto; font-size: clamp(1.5rem, 4vw, 2.25rem); margin: 0 0 1rem; line-height: 1.2; }
+.screen-heading {
+  flex: 0 0 auto;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
 .screen-body {
   flex: 1;
   display: flex;
@@ -15,6 +22,14 @@
   min-height: 0;
   overflow-y: auto;
   padding-bottom: 4%;
+  /* Scrolling still works (overflow-y: auto above) — this only hides
+     the scrollbar track/thumb, so a slide that overflows doesn't look
+     like it has a chunk bitten out of one side of the card. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+.screen-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, current Edge */
 }
 img { max-width: 100%; display: block; }
 

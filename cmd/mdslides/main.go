@@ -25,7 +25,15 @@ func main() {
 	flag.IntVar(&port, "port", 8080, "port to serve on")
 	flag.BoolVar(&noOpen, "no-open", false, "don't open the browser automatically")
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "usage: mdslides <file.md> [-port 8080] [-no-open]")
+		fmt.Fprintln(os.Stderr, `mdslides — turn a Markdown file into a live browser deck.
+
+Usage:
+  mdslides <file.md> [flags]
+
+Example:
+  mdslides notes.md -port 9000
+
+Flags:`)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -37,12 +45,12 @@ func main() {
 	path := flag.Arg(0)
 
 	if _, err := os.Stat(path); err != nil {
-		log.Fatalf("mdslides: %v", err)
+		fail("%v", err)
 	}
 
 	watcher, err := server.NewFSWatcher(path)
 	if err != nil {
-		log.Fatalf("mdslides: watch %s: %v", path, err)
+		fail("watch %s: %v", path, err)
 	}
 	defer watcher.Close()
 
@@ -74,8 +82,18 @@ func main() {
 	}
 
 	if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("mdslides: %v", err)
+		fail("%v", err)
 	}
+}
+
+// fail prints an error the same way every setup failure in this command
+// does, always pointing at -h — someone hitting "address already in use"
+// or a typo'd path should immediately see how to check their flags, not
+// just get a bare Go error and have to already know -h exists.
+func fail(format string, args ...any) {
+	fmt.Fprintf(os.Stderr, "mdslides: "+format+"\n", args...)
+	fmt.Fprintln(os.Stderr, "Run 'mdslides -h' for usage.")
+	os.Exit(1)
 }
 
 // openBrowser shells out to the OS's "open a URL" command. There's no
