@@ -204,6 +204,21 @@ func TestParse_ImagesFirstReflectsSourceOrder(t *testing.T) {
 	}
 }
 
+func TestParse_GFMExtensionsRender(t *testing.T) {
+	source := []byte("# Title\n| A | B |\n|---|---|\n| 1 | 2 |\n\n~~gone~~\n")
+	deck, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	got := string(deck.Slides[0].Pages[0].ContentHTML)
+	if !strings.Contains(got, "<table>") {
+		t.Errorf("content = %q, want a real <table> (GFM table extension)", got)
+	}
+	if !strings.Contains(got, "<del>gone</del>") {
+		t.Errorf("content = %q, want <del> (GFM strikethrough extension)", got)
+	}
+}
+
 func TestParse_H2DoesNotStartNewSlide(t *testing.T) {
 	source := []byte("# Title\nIntro.\n\n## Subsection\nMore detail.\n")
 	deck, err := Parse(source)

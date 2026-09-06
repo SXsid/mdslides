@@ -8,9 +8,17 @@ import (
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
 )
+
+// gfm is shared by every call to Parse: bare goldmark only implements
+// CommonMark, which doesn't include tables, strikethrough, autolinking
+// bare URLs, or task lists — those are all GitHub Flavored Markdown
+// extensions. Without this, a table in the source renders as a literal
+// paragraph of pipe characters instead of a <table>.
+var gfm = goldmark.New(goldmark.WithExtensions(extension.GFM))
 
 // ParseFile reads path and parses it. It exists only to keep file I/O out
 // of Parse, so Parse itself can be tested on in-memory byte slices without
@@ -29,8 +37,7 @@ func ParseFile(path string) (Deck, error) {
 // the text flow into that Page's Images — everything else renders straight
 // through as ContentHTML, unmodeled, via goldmark's own renderer.
 func Parse(source []byte) (Deck, error) {
-	md := goldmark.New()
-	doc := md.Parser().Parse(text.NewReader(source))
+	doc := gfm.Parser().Parse(text.NewReader(source))
 
 	var deck Deck
 	var current *Slide
@@ -84,7 +91,7 @@ func Parse(source []byte) (Deck, error) {
 			if deck.Title == "" {
 				deck.Title = heading
 			}
-			headingHTML, err := renderInlineChildren(md.Renderer(), source, h)
+			headingHTML, err := renderInlineChildren(gfm.Renderer(), source, h)
 			if err != nil {
 				return Deck{}, fmt.Errorf("render heading %q: %w", heading, err)
 			}
@@ -113,7 +120,7 @@ func Parse(source []byte) (Deck, error) {
 			continue
 		}
 		pageContentStarted = true
-		if err := md.Renderer().Render(&body, source, n); err != nil {
+		if err := gfm.Renderer().Render(&body, source, n); err != nil {
 			return Deck{}, fmt.Errorf("render block under slide %q: %w", current.Heading, err)
 		}
 	}
