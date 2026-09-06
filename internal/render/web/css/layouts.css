@@ -6,6 +6,26 @@
 .screen-body { flex: 1; display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
 img { max-width: 100%; display: block; }
 
+/* A table can show up inside any layout kind's ContentHTML — goldmark
+   emits a bare <table> with no styling at all, so left alone it's just
+   unbordered browser-default text. color-mix() derives the border/
+   stripe tints from --fg so they stay correct in both themes without a
+   separate dark-mode override. */
+.screen-content table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.screen-content th,
+.screen-content td {
+  border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.screen-content thead th {
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  font-weight: 600;
+}
+.screen-content tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
 /* 0 images: text fills the screen, centered for readability */
 .layout-text .screen-body {
   max-width: 65ch;

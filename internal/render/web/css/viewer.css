@@ -20,7 +20,13 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3vh 3vw;
+  /* max(20px, ...) instead of a bare vh/vw percentage: on a short
+     window (e.g. 600px tall, where 2vh is only 12px) the margin would
+     otherwise shrink well below a usable gutter. This guarantees at
+     least 20px on every side no matter the viewport, while still
+     scaling up on larger screens. Also trimmed from 3vh/3vw to 2vh/2vw
+     so the card itself claims more of the stage. */
+  padding: max(20px, 2vh) max(20px, 2vw);
 }
 
 #deck {
