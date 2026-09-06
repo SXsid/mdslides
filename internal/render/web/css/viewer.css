@@ -16,6 +16,13 @@ html, body {
    a fixed 16:9 card centered on it, like editing view in PowerPoint,
    rather than the deck stretching edge to edge like a plain web page. */
 #stage {
+  /* Custom properties, not bare values, because #deck's width cap
+     below needs the exact same vertical padding subtracted from the
+     viewport height — defining it once and referencing it in both
+     places keeps them from drifting out of sync the way the plain
+     177.78vh constant used to (see #deck's comment). */
+  --stage-pad-y: max(20px, 2vh);
+  --stage-pad-x: max(20px, 2vw);
   height: 100vh;
   display: flex;
   align-items: center;
@@ -24,14 +31,22 @@ html, body {
      window (e.g. 600px tall, where 2vh is only 12px) the margin would
      otherwise shrink well below a usable gutter. This guarantees at
      least 20px on every side no matter the viewport, while still
-     scaling up on larger screens. Also trimmed from 3vh/3vw to 2vh/2vw
-     so the card itself claims more of the stage. */
-  padding: max(20px, 2vh) max(20px, 2vw);
+     scaling up on larger screens. */
+  padding: var(--stage-pad-y) var(--stage-pad-x);
 }
 
 #deck {
   position: relative;
-  width: min(100%, 177.78vh); /* 16:9 capped by viewport height, not just width */
+  /* 16:9, capped by whichever runs out first: the stage's available
+     *width* (100%, a flex item's content-box — already excludes
+     --stage-pad-x), or its available *height*. The height cap used to
+     be a bare 177.78vh (16/9 * 100vh), which assumed the deck could
+     use the FULL viewport height — on a wide/fullscreen window where
+     this cap was the binding one, the resulting height (from
+     aspect-ratio) came out to exactly 100vh, swallowing the vertical
+     padding entirely. Subtracting 2 * --stage-pad-y first fixes that:
+     the cap now reflects the height actually left after padding. */
+  width: min(100%, calc((100vh - 2 * var(--stage-pad-y)) * 16 / 9));
   aspect-ratio: 16 / 9;
   background: var(--bg-card);
   border-radius: 1rem;
