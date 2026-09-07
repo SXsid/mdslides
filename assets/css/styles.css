@@ -913,6 +913,18 @@ header {
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
+.install-code-box .slide-copy-btn.copied {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.install-nav-btn svg,
+.slide-copy-btn svg,
+.copy-btn svg {
+  pointer-events: none;
+}
+
 .install-slide-footer {
   display: flex;
   align-items: center;

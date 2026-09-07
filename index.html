@@ -361,11 +361,11 @@ protocol from two-phase commit to Raft.
                       <h3>Universal One-Line Shell Script</h3>
                     </div>
                     <div class="install-slide-nav">
-                      <span class="install-step-counter" id="install-counter">1 of 4</span>
-                      <button id="install-prev-btn" class="install-nav-btn" type="button" title="Previous method" aria-label="Previous method">
+                      <span class="install-step-counter">1 of 4</span>
+                      <button class="install-nav-btn install-nav-prev" data-install-nav="prev" type="button" title="Previous method" aria-label="Previous method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                       </button>
-                      <button id="install-next-btn" class="install-nav-btn" type="button" title="Next method" aria-label="Next method">
+                      <button class="install-nav-btn install-nav-next" data-install-nav="next" type="button" title="Next method" aria-label="Next method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                       </button>
                     </div>
@@ -405,10 +405,10 @@ protocol from two-phase commit to Raft.
                     </div>
                     <div class="install-slide-nav">
                       <span class="install-step-counter">2 of 4</span>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                      <button class="install-nav-btn install-nav-prev" data-install-nav="prev" type="button" title="Previous method" aria-label="Previous method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                       </button>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                      <button class="install-nav-btn install-nav-next" data-install-nav="next" type="button" title="Next method" aria-label="Next method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                       </button>
                     </div>
@@ -447,10 +447,10 @@ protocol from two-phase commit to Raft.
                     </div>
                     <div class="install-slide-nav">
                       <span class="install-step-counter">3 of 4</span>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                      <button class="install-nav-btn install-nav-prev" data-install-nav="prev" type="button" title="Previous method" aria-label="Previous method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                       </button>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                      <button class="install-nav-btn install-nav-next" data-install-nav="next" type="button" title="Next method" aria-label="Next method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                       </button>
                     </div>
@@ -489,10 +489,10 @@ protocol from two-phase commit to Raft.
                     </div>
                     <div class="install-slide-nav">
                       <span class="install-step-counter">4 of 4</span>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                      <button class="install-nav-btn install-nav-prev" data-install-nav="prev" type="button" title="Previous method" aria-label="Previous method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                       </button>
-                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                      <button class="install-nav-btn install-nav-next" data-install-nav="next" type="button" title="Next method" aria-label="Next method">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                       </button>
                     </div>
@@ -575,8 +575,11 @@ protocol from two-phase commit to Raft.
     </div>
   </footer>
 
-  <!-- Modular Scripts -->
-  <script type="module" src="assets/js/main.js"></script>
+  <!-- Modular Scripts (Loaded deferred for compatibility with file:// and web servers) -->
+  <script defer src="assets/js/theme.js"></script>
+  <script defer src="assets/js/simulator.js"></script>
+  <script defer src="assets/js/installer.js"></script>
+  <script defer src="assets/js/main.js"></script>
 
   <!-- Vercel Web Analytics & Speed Insights -->
   <script>
