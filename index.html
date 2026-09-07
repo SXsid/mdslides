@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mdslides — Present from Markdown. No slide software. No export step.</title>
+  <meta name="description" content="Turn any Markdown file into a live, presentable browser deck with automatic bento layouts, Mermaid diagrams, and real-time live reload.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+  <!-- Modular Stylesheets -->
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <!-- Background Ambient Glow -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="container nav-content">
+      <a href="#" class="brand" aria-label="mdslides homepage">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <rect x="2" y="4" width="28" height="20" rx="4" fill="#3b82f6"/>
+            <rect x="4" y="6" width="24" height="16" rx="2" fill="#090a0f" opacity="0.92"/>
+            <rect x="7" y="9" width="10" height="2" rx="1" fill="#f8fafc"/>
+            <rect x="7" y="13" width="7" height="1.5" rx="0.75" fill="#94a3b8"/>
+            <rect x="18" y="9" width="7" height="8.5" rx="1.5" fill="#3b82f6" opacity="0.6"/>
+            <path d="M12 24 L10 28 M20 24 L22 28 M16 24 L16 27" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>mdslides</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#demo">Live Demo</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#syntax">Syntax</a></li>
+        <li><a href="#install">Install</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Theme Toggle Button -->
+        <button id="theme-toggle-btn" class="theme-btn" type="button" title="Toggle Light / Dark theme" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+
+        <a href="https://github.com/SXsid/mdslides" class="btn btn-outline" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          GitHub
+        </a>
+
+        <a href="#install" class="btn btn-primary">
+          Install
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+      <div class="container">
+        <div class="hero-pill">
+          <span class="dot"></span>
+          <span>Native Zero-Dependency Binary</span>
+        </div>
+
+        <h1>
+          Present from Markdown.<br>
+          <em>No slide software. No export step.</em>
+        </h1>
+
+        <p>
+          Write your design docs, runbooks, and team updates in plain Markdown. Run one command, and it becomes a responsive, keyboard-navigable slide deck in your browser that live-reloads on save.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#install" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Quick Install
+          </a>
+          <a href="https://github.com/SXsid/mdslides" target="_blank" rel="noopener" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            Star on GitHub
+          </a>
+        </div>
+
+        <!-- Quick 1-click install command snippet -->
+        <div class="hero-quick-install">
+          <code id="hero-cmd">curl -fsSL https://raw.githubusercontent.com/SXsid/mdslides/main/install.sh | bash</code>
+          <button class="copy-btn" data-copy-target="#hero-cmd" type="button" title="Copy to clipboard" aria-label="Copy to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Deck Simulator -->
+    <section class="simulator-section" id="demo">
+      <div class="container">
+        <div class="deck-frame">
+          <div class="deck-frame-header">
+            <div class="deck-window-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="deck-frame-title">Interactive Slide Simulator &mdash; localhost:8080</div>
+            <div class="deck-frame-tip">Click Next or use Arrow Keys</div>
+          </div>
+
+          <div class="sim-card">
+            <!-- Progress Bar -->
+            <div class="sim-progress" id="sim-progress-bar" style="width: 25%;"></div>
+
+            <!-- Slide 0: Split Layout -->
+            <div class="sim-screen active" data-sim="0">
+              <h2 class="sim-heading">Production Architecture Overview</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Welcome to <strong>mdslides</strong>. This live interactive simulator shows how plain Markdown documents render in the browser viewer.</p>
+                  <p>Every <code>#</code> heading starts a new slide. Standalone images automatically trigger split or bento layouts without writing CSS or adjusting coordinates.</p>
+                </div>
+                <div class="sim-media">
+                  <div>
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.5rem;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <p style="font-size: 0.825rem; color: var(--fg-muted);">1 Image &bull; Split 2-Column Layout</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 1: Bento Grid -->
+            <div class="sim-screen" data-sim="1">
+              <h2 class="sim-heading">Automatic Bento-4 Image Grid</h2>
+              <div class="sim-body" style="flex-direction: column; align-items: stretch;">
+                <p class="sim-text" style="flex: 0 0 auto;">Four images on consecutive lines assemble into a balanced 2x2 bento grid with text captioning:</p>
+                <div class="sim-grid-4">
+                  <div class="sim-grid-cell">Asset 01 / Ingestion Pipeline</div>
+                  <div class="sim-grid-cell">Asset 02 / Telemetry Dashboard</div>
+                  <div class="sim-grid-cell">Asset 03 / Storage Engine</div>
+                  <div class="sim-grid-cell">Asset 04 / Cluster Topography</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Mermaid Diagrams -->
+            <div class="sim-screen" data-sim="2">
+              <h2 class="sim-heading">Native Mermaid.js Diagrams</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Fenced code blocks with <code>mermaid</code> render as crisp vector graphics instead of raw text.</p>
+                  <p>State machines, flowcharts, sequence diagrams, and class diagrams adapt automatically to the active presentation theme.</p>
+                </div>
+                <div class="sim-media" style="border-style: solid; border-color: var(--border-accent);">
+                  <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); text-align: left; line-height: 1.6;">
+                    [Markdown Document]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [goldmark AST Walk]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [Layout Engine Classify]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [Render HTML + ES Modules]
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Live Reload -->
+            <div class="sim-screen" data-sim="3">
+              <h2 class="sim-heading">Real-Time Live Reload via SSE</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Save your Markdown file in VS Code, Vim, Helix, or Emacs, and the browser view reloads instantly.</p>
+                  <p>Driven by an internal filesystem watcher and Server-Sent Events stream compiled directly into the single Go binary.</p>
+                </div>
+                <div class="sim-media">
+                  <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #10b981; line-height: 1.7;">
+                    [Server] Event: reload<br>
+                    &bull; Directory watcher active<br>
+                    &bull; Zero cache invalidation required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulator HUD Controls -->
+            <div class="sim-hud">
+              <button id="sim-prev-btn" type="button" title="Previous Slide" aria-label="Previous Slide">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <span class="sim-counter" id="sim-counter">1 / 4</span>
+              <button id="sim-next-btn" type="button" title="Next Slide" aria-label="Next Slide">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Bento Grid -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Engineering Simplicity</div>
+          <h2 class="section-title">Built for technical authors and teams</h2>
+        </div>
+
+        <div class="bento-features">
+          <div class="feature-card span-8">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </div>
+            <h3>Intelligent Layout Classification</h3>
+            <p>One image sits beside your text. Two stack vertically. Three arrange into a bento composition, and four become a balanced 2x2 grid. More than four flow cleanly into continuation screens under the same heading without overcrowding the viewport.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </div>
+            <h3>Real-Time Live Reload</h3>
+            <p>Built-in directory watcher pushes change events through Server-Sent Events. The moment you hit save in your text editor, connected browsers refresh automatically.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <h3>Single Static Binary</h3>
+            <p>All HTML templates, CSS styles, and ES modules are embedded directly into the executable via Go embed. No npm, no external bundlers, no runtime installations.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
+            <h3>Native Mermaid Diagrams</h3>
+            <p>Write flowchart and sequence diagram fences directly in Markdown. mdslides renders them as scalable vector graphics matching your active presentation theme.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+            </div>
+            <h3>GitHub-Flavored Markdown</h3>
+            <p>Full support for tables, task lists, blockquotes, inline code, and syntax-formatted code fences right out of the box.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side-by-Side Syntax Demo -->
+    <section class="comparison-section" id="syntax">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Syntax Overview</div>
+          <h2 class="section-title">Plain Markdown in. Presentation deck out.</h2>
+        </div>
+
+        <div class="comparison-split">
+          <div class="editor-pane">
+            <div class="pane-header">
+              <span>presentation.md</span>
+              <span>Markdown Source</span>
+            </div>
+            <div class="pane-content">
+              <pre># Distributed Consensus
+
+We transitioned our primary replication 
+protocol from two-phase commit to Raft.
+
+- Predictable leader election
+- Unified membership changes
+- Zero data drift on partitions
+
+![Cluster Architecture](cluster-nodes.png)
+
+---
+
+# Verification Benchmark
+
+| Metric | 2PC | Raft |
+|---|---|---|
+| Latency p99 | 142ms | 18ms |
+| Failover | 12s | 350ms |</pre>
+            </div>
+          </div>
+
+          <div class="preview-pane">
+            <div class="pane-header">
+              <span>Viewer Preview</span>
+              <span>Rendered Output</span>
+            </div>
+            <div class="preview-rendered">
+              <h3>Distributed Consensus</h3>
+              <p>We transitioned our primary replication protocol from two-phase commit to Raft.</p>
+              <ul>
+                <li>Predictable leader election</li>
+                <li>Unified membership changes</li>
+                <li>Zero data drift on partitions</li>
+              </ul>
+              <div class="preview-callout">
+                [Automatic Split: Image positioned adjacent to text]
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Section (Interactive Slideshow & Stepper) -->
+    <section class="install-section" id="install">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Setup &amp; Distribution</div>
+          <h2 class="section-title">Install and start presenting in seconds</h2>
+        </div>
+
+        <div class="install-slideshow-wrapper">
+          <!-- Step Navigation Tabs -->
+          <div class="install-tabs" role="tablist" aria-label="Installation methods">
+            <button class="install-tab-btn active" role="tab" aria-selected="true" data-tab-index="0">
+              <span>1. Shell Script</span>
+              <span class="install-tab-badge">Recommended</span>
+            </button>
+            <button class="install-tab-btn" role="tab" aria-selected="false" data-tab-index="1">
+              <span>2. Go Toolchain</span>
+              <span class="install-tab-badge">Go 1.22+</span>
+            </button>
+            <button class="install-tab-btn" role="tab" aria-selected="false" data-tab-index="2">
+              <span>3. Standalone Binaries</span>
+              <span class="install-tab-badge">GitHub Releases</span>
+            </button>
+            <button class="install-tab-btn" role="tab" aria-selected="false" data-tab-index="3">
+              <span>4. Build from Source</span>
+              <span class="install-tab-badge">Git &amp; Make</span>
+            </button>
+          </div>
+
+          <!-- Slideshow Card -->
+          <div class="install-carousel-card install-slideshow">
+            <!-- Gentle Countdown Timer Bar -->
+            <div id="install-timer-bar" class="install-timer-bar"></div>
+
+            <div class="install-card-inner">
+              <div class="install-slides-container">
+                <!-- Slide 0: Shell Script -->
+                <div class="install-slide active" data-slide-index="0">
+                  <div class="install-slide-header">
+                    <div class="install-slide-title-group">
+                      <span class="install-tag">Recommended</span>
+                      <h3>Universal One-Line Shell Script</h3>
+                    </div>
+                    <div class="install-slide-nav">
+                      <span class="install-step-counter" id="install-counter">1 of 4</span>
+                      <button id="install-prev-btn" class="install-nav-btn" type="button" title="Previous method" aria-label="Previous method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button id="install-next-btn" class="install-nav-btn" type="button" title="Next method" aria-label="Next method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="install-slide-desc">
+                    Auto-detects your operating system (Linux, macOS) and CPU architecture (amd64, arm64), downloads the latest verified release archive, checks SHA-256 hashes, and installs the binary directly to your PATH.
+                  </p>
+
+                  <div class="install-feature-pills">
+                    <span class="install-feature-pill">Linux x86_64 &amp; ARM64</span>
+                    <span class="install-feature-pill">macOS Apple Silicon &amp; Intel</span>
+                    <span class="install-feature-pill">SHA-256 Verified</span>
+                    <span class="install-feature-pill">Auto PATH Discovery</span>
+                  </div>
+
+                  <div class="install-code-box">
+                    <code id="code-script">curl -fsSL https://raw.githubusercontent.com/SXsid/mdslides/main/install.sh | bash</code>
+                    <button class="slide-copy-btn" data-copy-target="#code-script" type="button" title="Copy to clipboard">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <div class="install-slide-footer">
+                    <span>Supports Linux and macOS workstations.</span>
+                    <a href="https://github.com/SXsid/mdslides/blob/main/docs/DISTRIBUTION.md">Distribution Guide &rarr;</a>
+                  </div>
+                </div>
+
+                <!-- Slide 1: Go Toolchain -->
+                <div class="install-slide" data-slide-index="1">
+                  <div class="install-slide-header">
+                    <div class="install-slide-title-group">
+                      <span class="install-tag">Go 1.22+</span>
+                      <h3>Install with Go Toolchain</h3>
+                    </div>
+                    <div class="install-slide-nav">
+                      <span class="install-step-counter">2 of 4</span>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="install-slide-desc">
+                    If you have Go installed on your workstation, you can compile and install the latest tagged binary directly from GitHub into your GOPATH with standard Go tooling.
+                  </p>
+
+                  <div class="install-feature-pills">
+                    <span class="install-feature-pill">Go 1.22 or newer</span>
+                    <span class="install-feature-pill">Cross-Platform</span>
+                    <span class="install-feature-pill">Native Compilation</span>
+                  </div>
+
+                  <div class="install-code-box">
+                    <code id="code-go">go install github.com/SXsid/mdslides/cmd/mdslides@latest</code>
+                    <button class="slide-copy-btn" data-copy-target="#code-go" type="button" title="Copy to clipboard">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <div class="install-slide-footer">
+                    <span>Installs directly to $GOPATH/bin/mdslides.</span>
+                    <a href="https://github.com/SXsid/mdslides/blob/main/docs/DISTRIBUTION.md">Documentation &rarr;</a>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Standalone Pre-compiled Binaries -->
+                <div class="install-slide" data-slide-index="2">
+                  <div class="install-slide-header">
+                    <div class="install-slide-title-group">
+                      <span class="install-tag">GitHub Releases</span>
+                      <h3>Standalone Pre-Compiled Binaries</h3>
+                    </div>
+                    <div class="install-slide-nav">
+                      <span class="install-step-counter">3 of 4</span>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="install-slide-desc">
+                    Download stripped standalone archives with zero dependencies directly from GitHub Releases. Pre-built for Linux, macOS, and Windows.
+                  </p>
+
+                  <div class="install-feature-pills">
+                    <span class="install-feature-pill">Zero Runtime Dependencies</span>
+                    <span class="install-feature-pill">Windows .exe Support</span>
+                    <span class="install-feature-pill">SHA-256 Checksums</span>
+                  </div>
+
+                  <div class="install-code-box">
+                    <code id="code-bin">curl -LO https://github.com/SXsid/mdslides/releases/latest/download/mdslides-linux-amd64.tar.gz</code>
+                    <button class="slide-copy-btn" data-copy-target="#code-bin" type="button" title="Copy to clipboard">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <div class="install-slide-footer">
+                    <span>Available for Linux, macOS, and Windows.</span>
+                    <a href="https://github.com/SXsid/mdslides/releases" target="_blank" rel="noopener">Browse Releases &rarr;</a>
+                  </div>
+                </div>
+
+                <!-- Slide 3: Build from Source -->
+                <div class="install-slide" data-slide-index="3">
+                  <div class="install-slide-header">
+                    <div class="install-slide-title-group">
+                      <span class="install-tag">Git &amp; Make</span>
+                      <h3>Build From Source</h3>
+                    </div>
+                    <div class="install-slide-nav">
+                      <span class="install-step-counter">4 of 4</span>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-prev-btn').click()" type="button" title="Previous method" aria-label="Previous method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button class="install-nav-btn" onclick="document.getElementById('install-next-btn').click()" type="button" title="Next method" aria-label="Next method">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="install-slide-desc">
+                    Clone the open-source repository and compile minimal, stripped binaries for any target operating system using the included Makefile.
+                  </p>
+
+                  <div class="install-feature-pills">
+                    <span class="install-feature-pill">make check</span>
+                    <span class="install-feature-pill">make dist</span>
+                    <span class="install-feature-pill">make release-local</span>
+                  </div>
+
+                  <div class="install-code-box">
+                    <code id="code-source">git clone https://github.com/SXsid/mdslides && cd mdslides && make build</code>
+                    <button class="slide-copy-btn" data-copy-target="#code-source" type="button" title="Copy to clipboard">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <div class="install-slide-footer">
+                    <span>Tested with gofmt, go vet, and go test.</span>
+                    <a href="https://github.com/SXsid/mdslides">Repository Source &rarr;</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="brand">
+            <div class="brand-icon">
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                <rect x="2" y="4" width="28" height="20" rx="4" fill="#3b82f6"/>
+                <rect x="4" y="6" width="24" height="16" rx="2" fill="#090a0f" opacity="0.92"/>
+                <rect x="7" y="9" width="10" height="2" rx="1" fill="#f8fafc"/>
+                <rect x="18" y="9" width="7" height="8.5" rx="1.5" fill="#3b82f6" opacity="0.6"/>
+              </svg>
+            </div>
+            <span>mdslides</span>
+          </a>
+          <p>Turn any Markdown file into a live, presentable browser deck. Zero dependencies. Zero build steps.</p>
+        </div>
+
+        <div class="footer-links-col">
+          <h5>Documentation</h5>
+          <ul>
+            <li><a href="https://github.com/SXsid/mdslides#readme">Quick Start</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/AUTHORING.md">Authoring Guide</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/ARCHITECTURE.md">Architecture Overview</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/DISTRIBUTION.md">Binary Distribution</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h5>Community &amp; Code</h5>
+          <ul>
+            <li><a href="https://github.com/SXsid/mdslides" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/releases" target="_blank" rel="noopener">Releases &amp; Binaries</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/issues" target="_blank" rel="noopener">Issue Tracker</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/LICENSE">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Made with <span class="heart-icon">❤️</span> by <a href="https://github.com/SXsid" target="_blank" rel="noopener">Sudhanshu Shekhar</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modular Scripts -->
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
