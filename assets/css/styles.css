@@ -258,6 +258,11 @@ header {
 .hero-quick-install code {
   white-space: nowrap;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hero-quick-install code::-webkit-scrollbar {
+  display: none;
 }
 
 .copy-btn {
@@ -874,16 +879,13 @@ header {
   color: #93c5fd;
   white-space: nowrap;
   overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-right: 0.5rem;
 }
 
 .install-code-box code::-webkit-scrollbar {
-  height: 4px;
-}
-.install-code-box code::-webkit-scrollbar-thumb {
-  background: var(--border-hover);
-  border-radius: 2px;
+  display: none;
 }
 
 /* Prominent Copy Button with Text & Icon */
