@@ -7,7 +7,6 @@
     if (!wrapper) return;
 
     const slides = wrapper.querySelectorAll(".install-slide");
-    const tabs = wrapper.querySelectorAll(".install-tab-btn");
     const progressBar = document.getElementById("install-timer-bar");
 
     if (slides.length === 0) return;
@@ -20,13 +19,6 @@
       // Toggle active slide
       slides.forEach((slide, idx) => {
         slide.classList.toggle("active", idx === current);
-      });
-
-      // Toggle active tab
-      tabs.forEach((tab, idx) => {
-        const isActive = idx === current;
-        tab.classList.toggle("active", isActive);
-        tab.setAttribute("aria-selected", isActive ? "true" : "false");
       });
 
       // Update counters across all slides
@@ -76,19 +68,8 @@
       }
     }
 
-    // Delegated click handler on wrapper for all tabs and nav buttons
+    // Delegated click handler on wrapper for nav buttons
     wrapper.addEventListener("click", (e) => {
-      // Tab click
-      const tab = e.target.closest(".install-tab-btn");
-      if (tab) {
-        const targetIndex = parseInt(tab.getAttribute("data-tab-index"), 10);
-        if (!isNaN(targetIndex)) {
-          goToSlide(targetIndex);
-          startAutoPlay();
-        }
-        return;
-      }
-
       // Previous button click
       const prev = e.target.closest(".install-nav-prev, [data-install-nav='prev']");
       if (prev) {

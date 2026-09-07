@@ -661,59 +661,7 @@ header {
   margin: 3rem auto 0;
 }
 
-/* Tabs Switcher */
-.install-tabs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.625rem;
-  margin-bottom: 1.5rem;
-}
 
-.install-tab-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  color: var(--fg-muted);
-  border-radius: var(--radius-full);
-  padding: 0.5rem 1.15rem;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.install-tab-btn:hover {
-  color: var(--fg-heading);
-  border-color: var(--border-hover);
-  background: var(--bg-surface-elevated);
-}
-
-.install-tab-btn.active {
-  background: var(--accent-subtle);
-  border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 600;
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.install-tab-badge {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  padding: 0.15rem 0.4rem;
-  background: var(--border-hover);
-  border-radius: var(--radius-xs);
-  color: var(--fg);
-}
-
-.install-tab-btn.active .install-tab-badge {
-  background: var(--accent);
-  color: #ffffff;
-}
 
 /* Slideshow Card */
 .install-carousel-card {
