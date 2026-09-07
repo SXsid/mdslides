@@ -29,15 +29,25 @@ export function init() {
     /* ignore */
   }
 
-  const btn = document.getElementById("theme-toggle");
-  if (!btn) return;
-  btn.addEventListener("click", function () {
+  function toggleTheme() {
     const next = currentlyDark() ? "light" : "dark";
     apply(next);
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch (e) {
       /* ignore */
+    }
+  }
+
+  const btn = document.getElementById("theme-toggle");
+  if (btn) {
+    btn.addEventListener("click", toggleTheme);
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (document.querySelector("dialog[open]")) return;
+    if ((e.key === "t" || e.key === "T") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      toggleTheme();
     }
   });
 }

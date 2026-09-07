@@ -3,42 +3,74 @@
    light/dark switch (in viewer.css + js/theme.js) only has to change
    values in one place.
 
-   Three states, same pattern used for the light/dark toggle everywhere
-   in this project: bare :root is the light default; the prefers-color-
-   scheme block covers "system says dark, user hasn't overridden it";
-   the [data-theme="dark"] block covers "user explicitly chose dark" and
-   wins over system preference either way. */
+   Three states:
+   - :root: light default
+   - prefers-color-scheme: dark: OS dark mode when unforced
+   - [data-theme="dark"]: explicit user override */
 :root {
   color-scheme: light dark;
-  --bg-stage: #e8e8ec;
+  --bg-stage: #f1f3f6;
   --bg-card: #ffffff;
-  --fg: #111111;
-  --muted: #666666;
+  --bg-card-subtle: #f8fafc;
+  --bg-hud: rgba(255, 255, 255, 0.88);
+  --fg: #0f172a;
+  --fg-heading: #020617;
+  --muted: #64748b;
   --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-subtle: rgba(37, 99, 235, 0.08);
+  --border-card: rgba(15, 23, 42, 0.08);
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-hover: rgba(15, 23, 42, 0.15);
   --gap: 1.5rem;
-  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-  /* A distinct heading face reads as "designed," not default-browser —
-     the whole point of the pairing. Both fall back to solid system
-     stacks if the Google Fonts request is ever slow/unreachable, so a
-     missing font never breaks the page, just makes it briefly plainer. */
+  --card-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.12), 0 8px 24px -6px rgba(15, 23, 42, 0.06);
+  --hud-shadow: 0 8px 30px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.08);
+  --progress-track: rgba(15, 23, 42, 0.06);
+  --progress-fill: #2563eb;
   --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-stage: #08080a;
-    --bg-card: #17181c;
-    --fg: #f2f2f2;
-    --muted: #999999;
-    --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    --bg-stage: #090a0f;
+    --bg-card: #13151b;
+    --bg-card-subtle: #1a1d25;
+    --bg-hud: rgba(19, 21, 27, 0.88);
+    --fg: #e2e8f0;
+    --fg-heading: #ffffff;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-subtle: rgba(59, 130, 246, 0.12);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --card-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --hud-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    --progress-track: rgba(255, 255, 255, 0.08);
+    --progress-fill: #3b82f6;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg-stage: #08080a;
-  --bg-card: #17181c;
-  --fg: #f2f2f2;
-  --muted: #999999;
-  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --bg-stage: #090a0f;
+  --bg-card: #13151b;
+  --bg-card-subtle: #1a1d25;
+  --bg-hud: rgba(19, 21, 27, 0.88);
+  --fg: #e2e8f0;
+  --fg-heading: #ffffff;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-subtle: rgba(59, 130, 246, 0.12);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --card-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --hud-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --progress-track: rgba(255, 255, 255, 0.08);
+  --progress-fill: #3b82f6;
 }
+

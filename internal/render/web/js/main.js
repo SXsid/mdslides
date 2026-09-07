@@ -7,8 +7,11 @@ import { init as initNav } from "./nav.js";
 import { init as initTheme } from "./theme.js";
 import { init as initLiveReload } from "./live-reload.js";
 import { init as initDiagrams } from "./diagrams.js";
+import { init as initShortcuts } from "./shortcuts.js";
 
 initNav();
 initTheme();
 initLiveReload();
 initDiagrams();
+initShortcuts();
+

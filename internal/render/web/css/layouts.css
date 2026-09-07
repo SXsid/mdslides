@@ -4,16 +4,18 @@
 
 /* flex: 0 0 auto pins the heading at its natural size so it never
    shrinks or scrolls; .screen-body takes the rest of the height and
-   is the only part that scrolls (padding-bottom replaces the bottom
-   padding .screen used to provide before it stopped scrolling). */
+   is the only part that scrolls. */
 .screen-heading {
   flex: 0 0 auto;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  margin: 0 0 1rem;
-  line-height: 1.2;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  letter-spacing: -0.02em;
+  color: var(--fg-heading);
+  margin: 0 0 1.25rem;
+  line-height: 1.15;
 }
+
 .screen-body {
   flex: 1;
   display: flex;
@@ -21,63 +23,146 @@
   gap: var(--gap);
   min-height: 0;
   overflow-y: auto;
-  padding-bottom: 4%;
-  /* Scrolling still works (overflow-y: auto above) — this only hides
-     the scrollbar track/thumb, so a slide that overflows doesn't look
-     like it has a chunk bitten out of one side of the card. */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* legacy Edge */
+  padding-bottom: 4.5%;
+  line-height: 1.6;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .screen-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, current Edge */
+  display: none;
 }
-img { max-width: 100%; display: block; }
 
-/* js/diagrams.js replaces a ```mermaid fence with a div.mermaid, then
-   Mermaid injects an <svg> into it. Centered, and capped to the
-   available width/height so a large diagram scales down to fit the
-   card instead of forcing the whole page wider. */
-.mermaid { display: flex; justify-content: center; }
-.mermaid svg { max-width: 100%; max-height: 60vh; height: auto; }
+img {
+  max-width: 100%;
+  display: block;
+  border-radius: 0.5rem;
+}
 
-/* A table can show up inside any layout kind's ContentHTML — goldmark
-   emits a bare <table> with no styling at all, so left alone it's just
-   unbordered browser-default text. color-mix() derives the border/
-   stripe tints from --fg so they stay correct in both themes without a
-   separate dark-mode override. */
-.screen-content table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+/* Typography and Markdown Elements */
+.screen-content {
+  color: var(--fg);
+}
+
+.screen-content p {
+  margin: 0 0 1rem;
+}
+.screen-content p:last-child {
+  margin-bottom: 0;
+}
+
+.screen-content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.screen-content a:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.screen-content blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-subtle);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--fg);
+  font-style: italic;
+}
+.screen-content blockquote p {
+  margin: 0;
+}
+
+.screen-content pre {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.75rem 0;
+}
+
+.screen-content code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-card-subtle);
+  padding: 0.15rem 0.375rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.screen-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.screen-content ul,
+.screen-content ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 1rem;
+}
+.screen-content li {
+  margin-bottom: 0.35rem;
+}
+.screen-content input[type="checkbox"] {
+  accent-color: var(--accent);
+  margin-right: 0.5rem;
+  transform: translateY(1px);
+}
+
+/* Mermaid Diagrams */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: auto 0;
+}
+.mermaid svg {
+  max-width: 100%;
+  max-height: 60vh;
+  height: auto;
+}
+
+/* GitHub Flavored Markdown Tables */
+.screen-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+  margin: 0.75rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-card);
+}
 .screen-content th,
 .screen-content td {
-  border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
-  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-subtle);
+  padding: 0.6rem 0.85rem;
   text-align: left;
 }
 .screen-content thead th {
-  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  background: var(--bg-card-subtle);
   font-weight: 600;
+  color: var(--fg-heading);
 }
 .screen-content tbody tr:nth-child(even) {
-  background: color-mix(in srgb, var(--fg) 4%, transparent);
+  background: color-mix(in srgb, var(--bg-card-subtle) 50%, transparent);
 }
 
-/* 0 images: text fills the screen, centered for readability when it's
-   short. justify-content: center has a classic flexbox bug: if the
-   content is taller than the box, the overflow is split evenly above
-   *and* below, and browsers won't scroll into the part that overflows
-   upward — the start of the text becomes unreachable. "safe center"
-   is the fix (falls back to flex-start instead of clipping when it
-   doesn't fit); declared after the plain "center" so a browser that
-   doesn't understand the two-value form just keeps the line above
-   instead of dropping centering entirely. */
+/* Layout 0 images: text fills screen */
 .layout-text .screen-body {
-  max-width: 65ch;
+  max-width: 68ch;
   margin: 0 auto;
   justify-content: center;
   justify-content: safe center;
   font-size: 1.15rem;
 }
 
-/* 1 image: two columns, side by side */
+/* Layout 1 image: split 2 columns */
 .layout-split .screen-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -86,16 +171,20 @@ img { max-width: 100%; display: block; }
 }
 .layout-split.images-first .screen-images { order: -1; }
 
-/* 2 images: stacked in one column, text in the other */
+/* Layout 2 images: stacked column */
 .layout-stack .screen-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap);
 }
-.layout-stack .screen-images { display: grid; grid-template-rows: 1fr 1fr; gap: var(--gap); }
+.layout-stack .screen-images {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--gap);
+}
 .layout-stack.images-first .screen-images { order: -1; }
 
-/* 3 images: one large + two small (bento), text fills the remaining cell */
+/* Layout 3 images: bento grid */
 .layout-bento-3 .screen-body {
   display: grid;
   grid-template-columns: 3fr 2fr;
@@ -103,7 +192,12 @@ img { max-width: 100%; display: block; }
   gap: var(--gap);
 }
 .layout-bento-3 .screen-images { display: contents; }
-.layout-bento-3 .screen-images img { height: 100%; width: 100%; object-fit: cover; border-radius: 0.5rem; }
+.layout-bento-3 .screen-images img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
 .layout-bento-3 .screen-images img:nth-of-type(1) { grid-column: 1; grid-row: 1 / span 2; }
 .layout-bento-3 .screen-images img:nth-of-type(2) { grid-column: 2; grid-row: 1; }
 .layout-bento-3 .screen-images img:nth-of-type(3) { grid-column: 2; grid-row: 2; }
@@ -113,8 +207,12 @@ img { max-width: 100%; display: block; }
 .layout-bento-3.images-first .screen-images img:nth-of-type(2),
 .layout-bento-3.images-first .screen-images img:nth-of-type(3) { grid-column: 1; }
 
-/* 4 images: 2x2 grid, text as a caption strip above */
-.layout-bento-4 .screen-body { display: flex; flex-direction: column; gap: var(--gap); }
+/* Layout 4 images: 2x2 bento */
+.layout-bento-4 .screen-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
 .layout-bento-4 .screen-content { flex: 0 0 auto; }
 .layout-bento-4 .screen-images {
   flex: 1;
@@ -124,4 +222,10 @@ img { max-width: 100%; display: block; }
   gap: var(--gap);
   min-height: 0;
 }
-.layout-bento-4 .screen-images img { height: 100%; width: 100%; object-fit: cover; border-radius: 0.5rem; }
+.layout-bento-4 .screen-images img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+

@@ -19,11 +19,16 @@ import (
 	"mdslides/internal/server"
 )
 
+var version = "dev"
+
 func main() {
 	var port int
 	var noOpen bool
+	var showVersion bool
 	flag.IntVar(&port, "port", 8080, "port to serve on")
 	flag.BoolVar(&noOpen, "no-open", false, "don't open the browser automatically")
+	flag.BoolVar(&showVersion, "version", false, "print version and exit")
+	flag.BoolVar(&showVersion, "v", false, "print version and exit (shorthand)")
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, `mdslides — turn a Markdown file into a live browser deck.
 
@@ -37,6 +42,11 @@ Flags:`)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	if showVersion {
+		fmt.Printf("mdslides %s\n", version)
+		os.Exit(0)
+	}
 
 	if flag.NArg() != 1 {
 		flag.Usage()

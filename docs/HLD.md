@@ -20,7 +20,7 @@ Renderer      -- Deck struct -> HTML, one <section> per Page
     v
 Server        -- serves HTML, watches the file, pushes live-reload over SSE
     v
-Browser (viewer.js) -- keyboard nav between Pages, progress indicator
+Browser (client ES modules) -- keyboard nav between Pages, HUD, progress indicator
 ```
 
 Each box owns exactly one kind of knowledge, and knowledge only flows

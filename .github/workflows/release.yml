@@ -1,0 +1,89 @@
+name: Release Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Release Binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Extract Tag Version
+        id: version
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build and Package Binaries
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          DIST="release_dist"
+          mkdir -p "${DIST}"
+
+          PLATFORMS=(
+            "linux/amd64"
+            "linux/arm64"
+            "darwin/amd64"
+            "darwin/arm64"
+            "windows/amd64"
+            "windows/arm64"
+          )
+
+          for platform in "${PLATFORMS[@]}"; do
+            os="${platform%/*}"
+            arch="${platform#*/}"
+            ext=""
+            if [ "$os" = "windows" ]; then
+              ext=".exe"
+            fi
+
+            target_name="mdslides-${VERSION}-${os}-${arch}"
+            bin_name="mdslides${ext}"
+            work_dir="build_${os}_${arch}"
+
+            mkdir -p "${work_dir}"
+            echo "Compiling for ${os}/${arch}..."
+            CGO_ENABLED=0 GOOS="${os}" GOARCH="${arch}" go build \
+              -trimpath \
+              -ldflags="-s -w -X main.version=${VERSION}" \
+              -o "${work_dir}/${bin_name}" \
+              ./cmd/mdslides
+
+            cp README.md LICENSE "${work_dir}/"
+
+            if [ "$os" = "windows" ]; then
+              (cd "${work_dir}" && zip -q "../${DIST}/${target_name}.zip" "${bin_name}" README.md LICENSE)
+            else
+              (cd "${work_dir}" && tar -czf "../${DIST}/${target_name}.tar.gz" "${bin_name}" README.md LICENSE)
+            fi
+
+            rm -rf "${work_dir}"
+          done
+
+          # Generate SHA-256 Checksums
+          (cd "${DIST}" && sha256sum * > checksums.txt)
+          echo "Generated archives in ${DIST}:"
+          ls -la "${DIST}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

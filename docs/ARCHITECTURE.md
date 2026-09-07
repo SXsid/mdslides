@@ -27,10 +27,12 @@ server.Server        -- serves that HTML, watches the file, pushes
                             ```mermaid fences into SVG via a CDN import)
 ```
 
-The four browser-side scripts (`internal/render/web/js/`) are ES modules
-that only `main.js` imports together — nav doesn't know theme exists,
-theme doesn't know live-reload exists, and so on. Same "one file per
-concern" idea as the Go packages, just on the frontend.
+The five browser-side scripts (`internal/render/web/js/`) are ES modules
+that only `main.js` imports together — `nav.js` manages keyboard and hash
+routing, `theme.js` controls color palettes, `live-reload.js` connects to
+the SSE stream, `diagrams.js` initializes Mermaid graphics, and
+`shortcuts.js` handles the keyboard cheat sheet modal dialog. Same
+"one file per concern" principle as the Go packages, applied to the frontend.
 
 **The dependency direction only ever goes one way, top to bottom:**
 `server` imports `render` and `markdown` and defines its own
@@ -98,15 +100,15 @@ default.
    the extra images become their own images-only "(cont.)" screens
    (`render.screensForPage`).
 4. The browser gets one HTML document with every screen already in it;
-   `viewer.js` just toggles which `.screen` has the `.active` class based
-   on arrow-key/space input and the `#/<n>` URL hash.
-5. Separately, `viewer.js` opens `GET /events` (Server-Sent Events).
+   `nav.js` toggles which `.screen` has the `.active` class based on
+   arrow-key/space input and the `#/<n>` URL hash.
+5. Separately, `live-reload.js` opens `GET /events` (Server-Sent Events).
    `server.handleEvents` blocks on `SourceWatcher.Changes()`; `NewFSWatcher`
    watches the file's *directory*, not the file itself, because editors
    that save via write-temp-then-rename (vim included) replace the inode a
    direct file watch points at, silently killing it after the first save.
-   On a change, the server pushes `data: reload`, and `viewer.js` just
-   reloads the page.
+   On a change, the server pushes `data: reload`, and `live-reload.js` reloads
+   the page.
 
 ## Exercises
 

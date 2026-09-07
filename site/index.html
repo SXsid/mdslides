@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mdslides — Present from Markdown. No slide software. No export step.</title>
+  <meta name="description" content="Turn any Markdown file into a live, presentable browser deck with automatic bento layouts, Mermaid diagrams, and real-time live reload.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --bg-surface: #12141c;
+      --bg-surface-elevated: #181b26;
+      --bg-surface-glass: rgba(18, 20, 28, 0.75);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(59, 130, 246, 0.3);
+      --fg: #f1f5f9;
+      --fg-muted: #94a3b8;
+      --fg-subtle: #64748b;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --accent-hover: #60a5fa;
+      --code-bg: #0c0e14;
+      --font-heading: "Space Grotesk", system-ui, sans-serif;
+      --font-body: "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+      --shadow-hover: 0 24px 60px -12px rgba(59, 130, 246, 0.15), 0 0 0 1px var(--border-accent);
+      --container-width: 1200px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Gradients */
+    .ambient-glow {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 450px;
+      background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.18) 0%, rgba(37, 99, 235, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--container-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface-glass);
+    }
+    .nav-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 4rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--fg);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-badge {
+      width: 1.75rem;
+      height: 1.75rem;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-surface);
+      transform: translateY(-1px);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 6rem 0 4rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--fg-muted);
+      margin-bottom: 2rem;
+    }
+    .hero-badge .indicator {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--fg-muted);
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Terminal Snippet */
+    .hero-install-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #93c5fd;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--fg-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: color 0.15s ease;
+    }
+    .copy-btn:hover { color: #ffffff; }
+
+    /* Interactive Deck Simulator */
+    .simulator-wrapper {
+      margin: 2rem 0 6rem;
+    }
+    .deck-frame {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .deck-frame-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .deck-window-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .deck-window-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .deck-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+    }
+    .deck-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Screen Simulator */
+    .sim-card {
+      background: #17181c;
+      border-radius: var(--radius-md);
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 4% 6%;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .sim-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .sim-screen {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      animation: fadeIn 0.25s ease forwards;
+    }
+    .sim-screen.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .sim-heading {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    .sim-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .sim-text {
+      flex: 1;
+      font-size: 1rem;
+      color: var(--fg-muted);
+    }
+    .sim-text p { margin-bottom: 0.75rem; }
+    .sim-text strong { color: #ffffff; }
+    .sim-media {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      height: 80%;
+      padding: 1rem;
+      text-align: center;
+    }
+    .sim-grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      width: 100%;
+      height: 100%;
+    }
+    .sim-grid-cell {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--fg-subtle);
+    }
+
+    /* Sim HUD */
+    .sim-hud {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(23, 24, 28, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 0.35rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .sim-hud button {
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0.25rem;
+      border-radius: 50%;
+    }
+    .sim-hud button:hover { color: var(--accent); }
+    .sim-counter {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+    }
+
+    /* Features Grid */
+    .features-section {
+      padding: 5rem 0;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .bento-features {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-hover);
+    }
+    .feature-card.span-8 { grid-column: span 8; }
+    .feature-card.span-4 { grid-column: span 4; }
+    .feature-card.span-6 { grid-column: span 6; }
+    .feature-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      background: var(--accent-glow);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .feature-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .feature-card p {
+      color: var(--fg-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Comparison Section */
+    .comparison-section {
+      padding: 5rem 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(18, 20, 28, 0.5) 50%, transparent 100%);
+    }
+    .comparison-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+    .editor-pane, .preview-pane {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+    }
+    .pane-content {
+      padding: 1.5rem;
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+    .pane-content pre {
+      white-space: pre-wrap;
+      color: #cbd5e1;
+    }
+    .preview-rendered {
+      padding: 2rem;
+      background: #17181c;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Installation Section */
+    .install-section {
+      padding: 5rem 0;
+    }
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .install-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .install-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .install-card p {
+      font-size: 0.875rem;
+      color: var(--fg-muted);
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+    .install-code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #93c5fd;
+      overflow-x: auto;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem;
+      margin-top: 5rem;
+      background: var(--bg);
+    }
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand {
+      max-width: 320px;
+    }
+    .footer-brand p {
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+    .footer-links-col h5 {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .footer-links-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .footer-links-col a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.15s ease;
+    }
+    .footer-links-col a:hover { color: var(--fg); }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: var(--fg-subtle);
+    }
+
+    @media (max-width: 900px) {
+      .bento-features { grid-template-columns: 1fr; }
+      .feature-card.span-8, .feature-card.span-4, .feature-card.span-6 { grid-column: span 1; }
+      .comparison-split { grid-template-columns: 1fr; }
+      .install-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-content">
+      <a href="#" class="brand">
+        <div class="brand-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </div>
+        <span>mdslides</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#demo">Interactive Demo</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="https://github.com/SXsid/mdslides" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="#install" class="btn btn-primary">Get mdslides</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="indicator"></span>
+          <span>Zero-Dependency Static Binary</span>
+        </div>
+        <h1>
+          <span>Present from Markdown.</span><br>
+          <em>No slide software. No export step.</em>
+        </h1>
+        <p>
+          Write your design docs, runbooks, and team updates in plain Markdown. Run one command, and it becomes a polished, responsive deck in your browser that live-reloads on save.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#install" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Install via Script
+          </a>
+          <a href="https://github.com/SXsid/mdslides" target="_blank" rel="noopener" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <div class="hero-install-box">
+          <code>curl -fsSL https://raw.githubusercontent.com/SXsid/mdslides/main/install.sh | bash</code>
+          <button class="copy-btn" id="copy-install-btn" title="Copy install command" aria-label="Copy install command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Deck Simulator -->
+    <section class="simulator-wrapper" id="demo">
+      <div class="container">
+        <div class="deck-frame">
+          <div class="deck-frame-header">
+            <div class="deck-window-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="deck-title">Interactive Viewer Demo &mdash; localhost:8080</div>
+            <div class="deck-title" style="color: #60a5fa;">Press Left / Right or click HUD</div>
+          </div>
+
+          <div class="sim-card">
+            <div class="sim-progress" id="sim-progress-bar" style="width: 25%;"></div>
+
+            <!-- Slide 1: Introduction -->
+            <div class="sim-screen active" data-sim="0">
+              <h2 class="sim-heading">Production Architecture Review</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Welcome to <strong>mdslides</strong>. This live interactive simulator shows exactly how Markdown files look when served by the standalone binary.</p>
+                  <p>No slide decks to build, no layout alignment tools, no context switching. Headings naturally become slides, and images configure themselves automatically.</p>
+                </div>
+                <div class="sim-media">
+                  <div>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.5rem;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <p style="font-size: 0.85rem; color: var(--fg-muted);">1 Image Split Layout</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Bento Grid -->
+            <div class="sim-screen" data-sim="1">
+              <h2 class="sim-heading">Automatic Bento Grid Layout</h2>
+              <div class="sim-body" style="flex-direction: column; align-items: stretch;">
+                <p class="sim-text" style="flex: 0 0 auto;">When a page contains 4 images, mdslides classifies them into a crisp 2x2 grid automatically.</p>
+                <div class="sim-grid-4">
+                  <div class="sim-grid-cell">Asset 01 / Diagram A</div>
+                  <div class="sim-grid-cell">Asset 02 / Telemetry</div>
+                  <div class="sim-grid-cell">Asset 03 / Dashboard</div>
+                  <div class="sim-grid-cell">Asset 04 / Flowchart</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Mermaid Diagrams -->
+            <div class="sim-screen" data-sim="2">
+              <h2 class="sim-heading">Native Mermaid.js Flowcharts</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Fenced code blocks with <code>mermaid</code> render as live vector diagrams on load instead of static code blocks.</p>
+                  <p>Perfect for sequence diagrams, deployment topologies, state machines, and engineering architecture documentation.</p>
+                </div>
+                <div class="sim-media" style="border-style: solid; border-color: rgba(59, 130, 246, 0.2);">
+                  <div style="font-family: var(--font-mono); font-size: 0.8rem; color: #93c5fd; text-align: left;">
+                    [Markdown File]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [goldmark AST Walk]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [Layout Engine Classify]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&darr;<br>
+                    [Render Presentation Deck]
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 4: Real-time Live Reload -->
+            <div class="sim-screen" data-sim="3">
+              <h2 class="sim-heading">Live Reload via SSE</h2>
+              <div class="sim-body">
+                <div class="sim-text">
+                  <p>Save your Markdown file in VS Code, Vim, Emacs, or Helix, and the browser view updates instantly without manual page refreshing.</p>
+                  <p>Powered by an internal filesystem watcher and Server-Sent Events stream built directly into the single Go binary.</p>
+                </div>
+                <div class="sim-media">
+                  <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #10b981;">
+                    [Server] Event: reload<br>
+                    &check; Re-parsed fresh<br>
+                    &check; Zero cache invalidation
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulator HUD -->
+            <div class="sim-hud">
+              <button id="sim-prev-btn" title="Previous" aria-label="Previous">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <span class="sim-counter" id="sim-counter">1 / 4</span>
+              <button id="sim-next-btn" title="Next" aria-label="Next">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Engineering Simplicity</div>
+          <h2 class="section-title">Built for engineers, authors, and teams</h2>
+        </div>
+
+        <div class="bento-features">
+          <div class="feature-card span-8">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </div>
+            <h3>Intelligent Layout Classification</h3>
+            <p>One image sits beside your text. Two stack vertically. Three arrange into a bento composition, and four become a balanced 2x2 grid. More than four flow cleanly into continuation screens under the same heading without cluttering your view.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </div>
+            <h3>Real-Time Live Reload</h3>
+            <p>Built-in filesystem directory watcher pushes updates through Server-Sent Events. Every time you save your Markdown file, your slides reload immediately.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <h3>Single Static Binary</h3>
+            <p>Templates, CSS, and modular ES JavaScript scripts are compiled directly into the executable via Go embed. No Node, no dependencies, no external runtime.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
+            <h3>Native Mermaid Diagrams</h3>
+            <p>Write flowchart and sequence diagram fences directly in Markdown. mdslides renders them as crisp, resizable SVGs matching your active theme.</p>
+          </div>
+
+          <div class="feature-card span-4">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+            </div>
+            <h3>GitHub-Flavored Markdown</h3>
+            <p>Support for tables, task lists, strikethrough, blockquotes, code blocks, and nested list structures right out of the box.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side by Side Syntax Demo -->
+    <section class="comparison-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Syntax Overview</div>
+          <h2 class="section-title">Plain Markdown in. Beautiful presentation out.</h2>
+        </div>
+
+        <div class="comparison-split">
+          <div class="editor-pane">
+            <div class="pane-header">
+              <span>presentation.md</span>
+              <span>Markdown Source</span>
+            </div>
+            <div class="pane-content">
+              <pre># Distributed Consensus
+
+We transitioned our primary replication 
+protocol from two-phase commit to Raft.
+
+- Predictable leader election
+- Unified membership changes
+- Zero data drift on partitions
+
+![Cluster Architecture](cluster-nodes.png)
+
+---
+
+# Verification Benchmark
+
+| Metric | 2PC | Raft |
+|---|---|---|
+| Latency p99 | 142ms | 18ms |
+| Failover | 12s | 350ms |</pre>
+            </div>
+          </div>
+
+          <div class="preview-pane">
+            <div class="pane-header">
+              <span>Viewer Preview</span>
+              <span>Rendered Output</span>
+            </div>
+            <div class="preview-rendered">
+              <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #fff; margin-bottom: 0.75rem;">Distributed Consensus</h3>
+              <p style="color: var(--fg-muted); font-size: 0.95rem; margin-bottom: 1rem;">We transitioned our primary replication protocol from two-phase commit to Raft.</p>
+              <ul style="color: #cbd5e1; font-size: 0.9rem; padding-left: 1.25rem; margin-bottom: 1.25rem;">
+                <li>Predictable leader election</li>
+                <li>Unified membership changes</li>
+                <li>Zero data drift on partitions</li>
+              </ul>
+              <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: var(--font-mono); color: #93c5fd; text-align: center;">
+                [Automatic Split: Image positioned adjacent to text]
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Matrix -->
+    <section class="install-section" id="install">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Distribution &amp; Setup</div>
+          <h2 class="section-title">Install and start presenting in seconds</h2>
+        </div>
+
+        <div class="install-grid">
+          <div class="install-card">
+            <h4>One-Line Shell Script</h4>
+            <p>Installs the matching pre-compiled binary for your operating system and architecture directly into your PATH.</p>
+            <div class="install-code">curl -fsSL https://raw.githubusercontent.com/SXsid/mdslides/main/install.sh | bash</div>
+          </div>
+
+          <div class="install-card">
+            <h4>Go Toolchain</h4>
+            <p>Compile and install the latest tagged binary directly from GitHub using standard Go tooling.</p>
+            <div class="install-code">go install github.com/SXsid/mdslides/cmd/mdslides@latest</div>
+          </div>
+
+          <div class="install-card">
+            <h4>Build From Source</h4>
+            <p>Clone the repository and build stripped, compact binaries using the included Makefile.</p>
+            <div class="install-code">git clone https://github.com/SXsid/mdslides<br>cd mdslides && make build</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="brand">
+            <div class="brand-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </div>
+            <span>mdslides</span>
+          </a>
+          <p>Turn any Markdown file into a live, presentable browser deck. Zero dependencies. Zero build step.</p>
+        </div>
+
+        <div class="footer-links-col">
+          <h5>Documentation</h5>
+          <ul>
+            <li><a href="https://github.com/SXsid/mdslides#readme">Quick Start</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/AUTHORING.md">Authoring Guide</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/ARCHITECTURE.md">Architecture Overview</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/docs/DISTRIBUTION.md">Binary Distribution</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h5>Community &amp; Code</h5>
+          <ul>
+            <li><a href="https://github.com/SXsid/mdslides" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/releases" target="_blank" rel="noopener">Releases &amp; Binaries</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/issues" target="_blank" rel="noopener">Issue Tracker</a></li>
+            <li><a href="https://github.com/SXsid/mdslides/blob/main/LICENSE">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>Released under the MIT License.</div>
+        <div>mdslides open source project</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Simulator Navigation
+    (function () {
+      const screens = document.querySelectorAll(".sim-screen");
+      const prevBtn = document.getElementById("sim-prev-btn");
+      const nextBtn = document.getElementById("sim-next-btn");
+      const counter = document.getElementById("sim-counter");
+      const progress = document.getElementById("sim-progress-bar");
+      let current = 0;
+
+      function render() {
+        screens.forEach((s, idx) => {
+          s.classList.toggle("active", idx === current);
+        });
+        counter.textContent = (current + 1) + " / " + screens.length;
+        progress.style.width = ((current + 1) / screens.length * 100) + "%";
+      }
+
+      prevBtn.addEventListener("click", () => {
+        current = (current - 1 + screens.length) % screens.length;
+        render();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        current = (current + 1) % screens.length;
+        render();
+      });
+
+      // Copy install snippet
+      const copyBtn = document.getElementById("copy-install-btn");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+          const cmd = "curl -fsSL https://raw.githubusercontent.com/SXsid/mdslides/main/install.sh | bash";
+          navigator.clipboard.writeText(cmd).then(() => {
+            copyBtn.style.color = "#10b981";
+            setTimeout(() => { copyBtn.style.color = ""; }, 2000);
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
