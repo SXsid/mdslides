@@ -7,6 +7,15 @@
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
 body {
   background-color: var(--bg);
   color: var(--fg);
@@ -14,7 +23,6 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
@@ -24,12 +32,14 @@ body {
   top: -180px;
   left: 50%;
   transform: translateX(-50%);
-  width: 900px;
-  height: 500px;
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
   background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
   opacity: 0.8;
+  overflow: hidden;
 }
 
 .container {
@@ -1144,178 +1154,118 @@ footer {
 
 /* 4. Tablets & Mobile (<= 768px) */
 @media (max-width: 768px) {
+  /* Hide heavy desktop-only sections (Interactive Simulator & Split Comparison) */
+  .desktop-only {
+    display: none !important;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
   /* Header & Navigation */
+  :root {
+    --header-height: 3.5rem;
+  }
   .nav-links {
     display: none;
   }
   .mobile-menu-btn {
     display: flex;
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+  .theme-btn {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+  .nav-cta-github {
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    justify-content: center;
   }
   .nav-cta-github span {
     display: none;
   }
-  .nav-cta-github {
-    padding: 0.5rem;
-  }
-
-  /* Deck Frame & Live Simulator (Crucial Vertical Reflow) */
-  .deck-frame {
-    padding: 0.85rem;
-    border-radius: var(--radius-md);
-  }
-  .deck-frame-tip {
+  .nav-cta-install {
     display: none;
   }
-  .sim-card {
-    aspect-ratio: auto;
-    min-height: 400px;
-    padding: 1.25rem 1rem 3.75rem;
+  .brand {
+    gap: 0.45rem;
+    font-size: 1.15rem;
   }
-  .sim-heading {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
+  .brand-icon {
+    width: 1.75rem;
+    height: 1.75rem;
   }
-  .sim-body {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+  .brand-icon svg {
+    width: 20px;
+    height: 20px;
   }
-  .sim-text {
-    font-size: 0.875rem;
-  }
-  .sim-text p {
-    margin-bottom: 0.5rem;
-  }
-  .sim-media {
-    height: auto;
-    min-height: 120px;
-    padding: 0.75rem;
-  }
-  .sim-grid-4 {
-    min-height: 100px;
-  }
-  .sim-hud {
-    bottom: 0.85rem;
-    padding: 0.35rem 0.85rem;
-    gap: 0.65rem;
-  }
-  .sim-hud button {
-    width: 2rem;
-    height: 2rem;
-    padding: 0.35rem;
+  .nav-actions {
+    gap: 0.45rem;
   }
 
-  /* Installation Stepper */
-  .install-section {
-    padding: 3.5rem 0;
-  }
-  .install-slideshow-wrapper {
-    margin-top: 2rem;
-  }
-  .install-card-inner {
-    padding: 1.25rem;
-  }
-  .install-slide-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  .install-slide-nav {
-    width: 100%;
-    justify-content: flex-end;
-  }
-  .install-slide-desc {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-  .install-feature-pills {
-    margin-bottom: 1.25rem;
-    gap: 0.4rem;
-  }
-  .install-feature-pill {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.6rem;
-  }
-  .install-code-box {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-    padding: 0.875rem;
-  }
-  .install-code-box code {
-    font-size: 0.8rem;
-  }
-  .install-code-box .slide-copy-btn {
-    justify-content: center;
-    width: 100%;
-    padding: 0.65rem 1rem;
-    font-size: 0.875rem;
-  }
-  .install-slide-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-
-  /* Footer */
-  footer {
-    padding: 3rem 0 2rem;
-    margin-top: 3.5rem;
-  }
-  .footer-grid {
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-  .footer-brand {
-    max-width: 100%;
-  }
-  .footer-bottom {
-    padding-top: 1.5rem;
-    font-size: 0.875rem;
-  }
-}
-
-/* 5. Mobile Phones (<= 640px) */
-@media (max-width: 640px) {
   /* Hero Section */
   .hero {
-    padding: 3.5rem 0 2rem;
+    padding: 2.75rem 0 2rem;
   }
   .hero-pill {
     font-size: 0.75rem;
-    padding: 0.3rem 0.75rem;
-    margin-bottom: 1.5rem;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 1.25rem;
   }
   .hero h1 {
-    font-size: clamp(1.85rem, 7.5vw, 2.75rem);
-    margin-bottom: 1rem;
+    font-size: clamp(1.85rem, 6.5vw, 2.5rem);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.85rem;
   }
   .hero p {
-    font-size: 1rem;
-    margin-bottom: 1.75rem;
-    padding: 0 0.25rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin: 0 auto 1.5rem;
+    max-width: 480px;
   }
   .hero-cta {
     flex-direction: column;
     width: 100%;
-    gap: 0.75rem;
+    max-width: 340px;
+    margin: 0 auto 1.25rem;
+    gap: 0.65rem;
   }
   .hero-cta .btn {
     width: 100%;
     justify-content: center;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.95rem;
+    padding: 0.7rem 1.15rem;
+    font-size: 0.925rem;
   }
   .hero-quick-install {
     width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
     justify-content: space-between;
-    padding: 0.6rem 0.85rem;
+    padding: 0.55rem 0.85rem;
     font-size: 0.775rem;
+    min-width: 0;
+  }
+  .hero-quick-install code {
+    min-width: 0;
+    flex: 1;
+    font-size: 0.75rem;
   }
 
-  /* Bento Grid 1-column */
+  /* Bento Features Grid (Clean 1-Column on Mobile) */
+  .features-section {
+    padding: 3rem 0;
+  }
+  .section-header {
+    margin-bottom: 2rem;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 5vw, 2rem);
+  }
   .bento-features {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -1338,48 +1288,100 @@ footer {
   }
   .feature-card p {
     font-size: 0.875rem;
+    line-height: 1.55;
   }
 
-  /* Section Spacing */
-  .features-section,
-  .comparison-section,
-  .simulator-section {
+  /* Installation Stepper */
+  .install-section {
     padding: 3rem 0;
-    margin: 1.5rem 0;
   }
-  .section-header {
-    margin-bottom: 2rem;
+  .install-slideshow-wrapper {
+    margin-top: 1.5rem;
   }
-  .section-title {
-    font-size: 1.65rem;
+  .install-card-inner {
+    padding: 1.25rem 1rem;
+  }
+  .install-slide-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .install-slide-nav {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .install-slide-desc {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  .install-feature-pills {
+    margin-bottom: 1rem;
+    gap: 0.35rem;
+  }
+  .install-feature-pill {
+    font-size: 0.725rem;
+    padding: 0.2rem 0.55rem;
+  }
+  .install-code-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+  .install-code-box code {
+    font-size: 0.775rem;
+    min-width: 0;
+    flex: 1;
+  }
+  .install-code-box .slide-copy-btn {
+    justify-content: center;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+  .install-slide-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 2.75rem 0 2rem;
+    margin-top: 3rem;
+  }
+  .footer-grid {
+    flex-direction: column;
+    gap: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .footer-brand {
+    max-width: 100%;
+  }
+  .footer-bottom {
+    padding-top: 1.25rem;
+    font-size: 0.85rem;
   }
 }
 
-/* 6. Ultra-Compact Mobile Phones (<= 480px) */
+/* 5. Ultra-Compact Mobile Phones (<= 480px) */
 @media (max-width: 480px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 0.875rem;
   }
   .mobile-nav-drawer .container {
-    padding: 1rem 1rem 1.5rem;
+    padding: 1rem 0.875rem 1.25rem;
   }
-  .nav-cta-install {
-    display: none;
+  .hero-cta,
+  .hero-quick-install {
+    max-width: 100%;
   }
-  .deck-frame {
-    padding: 0.625rem;
+  .hero h1 {
+    font-size: 1.75rem;
   }
-  .sim-card {
-    min-height: 420px;
-    padding: 1rem 0.75rem 3.75rem;
-  }
-  .sim-heading {
-    font-size: 1.15rem;
-  }
-  .sim-text {
-    font-size: 0.825rem;
-  }
-  .hero-quick-install code {
-    font-size: 0.75rem;
+  .section-title {
+    font-size: 1.5rem;
   }
 }
