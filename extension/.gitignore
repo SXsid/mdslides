@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+*.vsix
+
+# Copied from internal/render/web/css by scripts/sync-assets.mjs on every
+# build. Committing it would put a second copy of the viewer's stylesheets in
+# git, which is exactly the drift the sync script exists to prevent.
+media/css/

@@ -1,0 +1,88 @@
+/* Webview-only adjustments. Everything that defines how a deck *looks* lives
+   in css/tokens.css, css/layouts.css and css/viewer.css, which are copied
+   verbatim from the Go module by scripts/sync-assets.mjs — this file exists
+   only for the things a webview does differently from a served page, and it
+   loads last so it wins on ties. */
+
+/* VS Code injects its own body styling (padding, editor font, editor colors)
+   into every webview. The deck is a full-bleed 16:9 card that supplies all of
+   its own chrome, so that styling has to be undone rather than inherited. */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-stage);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+
+/* #screens is a plain static wrapper around the sections so the extension can
+   replace the whole set on an edit without disturbing the progress bar. Being
+   static, it creates no containing block, so .screen { position: absolute;
+   inset: 0 } still resolves against #deck exactly as it does in the CLI. */
+#screens {
+  display: contents;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* A file with no H1 yet is where every deck starts, so this is the first
+   screen a new user sees — it should say what to type, not look broken. */
+#empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--font-body);
+}
+
+#empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+#empty-state p:first-child {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--fg-heading);
+}
+
+#empty-state .hint {
+  font-size: 0.85rem;
+}
+
+#empty-state pre {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border-card);
+  border-radius: 0.5rem;
+  background: var(--bg-card-subtle);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+/* Mermaid could not be fetched (offline, or the CDN is blocked). The diagram
+   source is shown as-is rather than leaving a hole in the slide. */
+.mermaid-unavailable {
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: 0.5rem;
+  background: var(--bg-card-subtle);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow: auto;
+}
