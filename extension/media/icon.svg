@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Card -->
+  <rect x="2" y="4" width="28" height="20" rx="4" fill="url(#grad)"/>
+  <!-- Screen Inner Frame -->
+  <rect x="4" y="6" width="24" height="16" rx="2" fill="#090a0f" opacity="0.92"/>
+  <!-- Presentation Elements -->
+  <rect x="7" y="9" width="10" height="2" rx="1" fill="#f8fafc"/>
+  <rect x="7" y="13" width="7" height="1.5" rx="0.75" fill="#94a3b8"/>
+  <rect x="7" y="16" width="5" height="1.5" rx="0.75" fill="#64748b"/>
+  <!-- Image/Chart Block -->
+  <rect x="18" y="9" width="7" height="8.5" rx="1.5" fill="#3b82f6" opacity="0.6"/>
+  <!-- Stand Legs -->
+  <path d="M12 24 L10 28 M20 24 L22 28 M16 24 L16 27" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round"/>
+</svg>

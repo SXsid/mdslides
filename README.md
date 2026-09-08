@@ -169,6 +169,35 @@ For comprehensive examples and layout guidelines, read the [Slide Authoring Guid
 
 ---
 
+## Editor Integration
+
+### VS Code
+
+[`extension/`](extension/) is a VS Code extension that renders the same decks in
+a webview beside your editor — no binary required, and no `mdslides` install.
+
+- The preview updates **as you type**, not on save, because it reads the editor
+  buffer instead of watching the file.
+- Moving the cursor in the Markdown jumps the preview to that slide.
+- **Export Deck to Standalone HTML** writes a single self-contained file — CSS,
+  viewer script, and images all inlined — that opens anywhere.
+
+```bash
+cd extension
+npm install
+npm run vsce-package     # -> extension/mdslides-<version>.vsix
+code --install-extension mdslides-0.1.0.vsix
+```
+
+`extension/src/deck/` is a TypeScript port of `internal/markdown`,
+`internal/layout` and `internal/render`, so the slide rules, layout
+classification and `.screen.layout-*` markup are the same in both. The
+stylesheets are not duplicated at all: `extension/scripts/sync-assets.mjs`
+copies `internal/render/web/css/*.css` on every build, keeping one source of
+truth for how a deck looks. See [extension/README.md](extension/README.md).
+
+---
+
 ## Architecture
 
 mdslides is engineered with strict package boundaries and single-responsibility components:

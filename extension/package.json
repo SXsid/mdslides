@@ -1,0 +1,139 @@
+{
+  "name": "mdslides",
+  "displayName": "mdslides — Markdown Slides",
+  "description": "Turn a Markdown file into a live PPT-style deck inside VS Code. Every H1 is a slide; images are auto-arranged into bento layouts.",
+  "version": "0.1.0",
+  "publisher": "sxsid",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SXsid/mdslides.git",
+    "directory": "extension"
+  },
+  "homepage": "https://github.com/SXsid/mdslides#readme",
+  "bugs": {
+    "url": "https://github.com/SXsid/mdslides/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "slides",
+    "presentation",
+    "deck",
+    "preview"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "mdslides.openPreviewToSide",
+        "title": "Open Deck Preview to the Side",
+        "category": "mdslides",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "mdslides.openPreview",
+        "title": "Open Deck Preview",
+        "category": "mdslides"
+      },
+      {
+        "command": "mdslides.exportHtml",
+        "title": "Export Deck to Standalone HTML...",
+        "category": "mdslides"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mdslides.openPreviewToSide",
+          "when": "editorLangId == markdown && !notebookEditorFocused",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "mdslides.openPreview",
+          "when": "resourceLangId == markdown",
+          "group": "navigation@100"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mdslides.openPreviewToSide",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "mdslides.openPreview",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "mdslides.exportHtml",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "mdslides",
+      "properties": {
+        "mdslides.syncCursor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Jump the preview to the slide containing the editor's cursor."
+        },
+        "mdslides.theme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ],
+          "enumDescriptions": [
+            "Follow the active VS Code color theme.",
+            "Always use the deck's light theme.",
+            "Always use the deck's dark theme."
+          ],
+          "default": "auto",
+          "description": "Color theme for the deck preview. The T key still overrides this for the current session."
+        },
+        "mdslides.mermaid": {
+          "type": "boolean",
+          "default": true,
+          "description": "Render ```mermaid fenced blocks as diagrams. Loads Mermaid from a CDN, so it needs network access."
+        },
+        "mdslides.webFonts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Load the deck's display fonts (Space Grotesk, Inter, JetBrains Mono) from Google Fonts. Disable to stay fully offline and fall back to system fonts."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "compile": "npm run sync-assets && node scripts/build.mjs",
+    "watch": "npm run sync-assets && node scripts/build.mjs --watch",
+    "package": "npm run sync-assets && node scripts/build.mjs --production",
+    "typecheck": "tsc --noEmit",
+    "vsce-package": "npm run package && vsce package --no-dependencies",
+    "vscode:prepublish": "npm run package"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "markdown-it-task-lists": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}
