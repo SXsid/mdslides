@@ -139,6 +139,114 @@ header {
 [data-theme="light"] .icon-moon { display: block; }
 [data-theme="light"] .icon-sun { display: none; }
 
+/* Mobile Menu Toggle Button */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.mobile-menu-btn:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-surface);
+  color: var(--accent);
+}
+
+.mobile-menu-btn .icon-close {
+  display: none;
+}
+
+.mobile-menu-btn[aria-expanded="true"] .icon-menu {
+  display: none;
+}
+
+.mobile-menu-btn[aria-expanded="true"] .icon-close {
+  display: block;
+}
+
+/* Mobile Navigation Drawer */
+.mobile-nav-drawer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-glass);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  z-index: 99;
+}
+
+.mobile-nav-drawer.is-open {
+  max-height: 520px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-nav-drawer .container {
+  padding: 1.25rem 1.5rem 1.75rem;
+}
+
+.mobile-nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.mobile-nav-links a {
+  display: block;
+  padding: 0.75rem 0.5rem;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobile-nav-links li:last-child a {
+  border-bottom: none;
+}
+
+.mobile-nav-links a:hover {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  padding-left: 0.85rem;
+}
+
+.mobile-nav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.mobile-nav-footer .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -893,12 +1001,7 @@ header {
   text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-  .install-card-inner { padding: 1.5rem; }
-  .install-slide-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .install-code-box { flex-direction: column; align-items: stretch; gap: 0.75rem; }
-  .install-code-box .slide-copy-btn { justify-content: center; }
-}
+
 
 /* Footer */
 footer {
@@ -998,15 +1101,285 @@ footer {
   50% { transform: scale(1.2); }
 }
 
-/* Responsive Media Queries */
-@media (max-width: 1024px) {
-  .bento-features { grid-template-columns: 1fr; }
-  .feature-card.span-8, .feature-card.span-4, .feature-card.span-6 { grid-column: span 1; }
-  .comparison-split { grid-template-columns: 1fr; }
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM (ALL SCREEN TIERS)
+   ========================================================================== */
+
+/* 1. Large Displays & Ultra-Wide (>= 1440px) */
+@media (min-width: 1440px) {
+  :root {
+    --container-max: 1280px;
+  }
 }
 
+/* 2. Tablet Landscape & Medium Desktops (641px – 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .bento-features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .feature-card.span-8 { grid-column: span 2; }
+  .feature-card.span-4 { grid-column: span 1; }
+  .feature-card.span-6 { grid-column: span 1; }
+  .feature-card { padding: 1.5rem; }
+}
+
+/* 3. Mid-size Split Stack (<= 899px) */
+@media (max-width: 899px) {
+  .comparison-split {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .pane-header {
+    padding: 0.65rem 1rem;
+  }
+  .pane-content {
+    padding: 1.25rem;
+    font-size: 0.825rem;
+  }
+  .preview-rendered {
+    padding: 1.75rem 1.25rem;
+  }
+}
+
+/* 4. Tablets & Mobile (<= 768px) */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .hero h1 { font-size: 2.2rem; }
-  .deck-frame { padding: 0.75rem; }
+  /* Header & Navigation */
+  .nav-links {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: flex;
+  }
+  .nav-cta-github span {
+    display: none;
+  }
+  .nav-cta-github {
+    padding: 0.5rem;
+  }
+
+  /* Deck Frame & Live Simulator (Crucial Vertical Reflow) */
+  .deck-frame {
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+  }
+  .deck-frame-tip {
+    display: none;
+  }
+  .sim-card {
+    aspect-ratio: auto;
+    min-height: 400px;
+    padding: 1.25rem 1rem 3.75rem;
+  }
+  .sim-heading {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .sim-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .sim-text {
+    font-size: 0.875rem;
+  }
+  .sim-text p {
+    margin-bottom: 0.5rem;
+  }
+  .sim-media {
+    height: auto;
+    min-height: 120px;
+    padding: 0.75rem;
+  }
+  .sim-grid-4 {
+    min-height: 100px;
+  }
+  .sim-hud {
+    bottom: 0.85rem;
+    padding: 0.35rem 0.85rem;
+    gap: 0.65rem;
+  }
+  .sim-hud button {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.35rem;
+  }
+
+  /* Installation Stepper */
+  .install-section {
+    padding: 3.5rem 0;
+  }
+  .install-slideshow-wrapper {
+    margin-top: 2rem;
+  }
+  .install-card-inner {
+    padding: 1.25rem;
+  }
+  .install-slide-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .install-slide-nav {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .install-slide-desc {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .install-feature-pills {
+    margin-bottom: 1.25rem;
+    gap: 0.4rem;
+  }
+  .install-feature-pill {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+  }
+  .install-code-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.875rem;
+  }
+  .install-code-box code {
+    font-size: 0.8rem;
+  }
+  .install-code-box .slide-copy-btn {
+    justify-content: center;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+  }
+  .install-slide-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 3rem 0 2rem;
+    margin-top: 3.5rem;
+  }
+  .footer-grid {
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .footer-brand {
+    max-width: 100%;
+  }
+  .footer-bottom {
+    padding-top: 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* 5. Mobile Phones (<= 640px) */
+@media (max-width: 640px) {
+  /* Hero Section */
+  .hero {
+    padding: 3.5rem 0 2rem;
+  }
+  .hero-pill {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.85rem, 7.5vw, 2.75rem);
+    margin-bottom: 1rem;
+  }
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 1.75rem;
+    padding: 0 0.25rem;
+  }
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  .hero-cta .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+  }
+  .hero-quick-install {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.775rem;
+  }
+
+  /* Bento Grid 1-column */
+  .bento-features {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .feature-card.span-8,
+  .feature-card.span-4,
+  .feature-card.span-6 {
+    grid-column: span 1;
+  }
+  .feature-card {
+    padding: 1.25rem;
+  }
+  .feature-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-bottom: 1rem;
+  }
+  .feature-card h3 {
+    font-size: 1.15rem;
+  }
+  .feature-card p {
+    font-size: 0.875rem;
+  }
+
+  /* Section Spacing */
+  .features-section,
+  .comparison-section,
+  .simulator-section {
+    padding: 3rem 0;
+    margin: 1.5rem 0;
+  }
+  .section-header {
+    margin-bottom: 2rem;
+  }
+  .section-title {
+    font-size: 1.65rem;
+  }
+}
+
+/* 6. Ultra-Compact Mobile Phones (<= 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .mobile-nav-drawer .container {
+    padding: 1rem 1rem 1.5rem;
+  }
+  .nav-cta-install {
+    display: none;
+  }
+  .deck-frame {
+    padding: 0.625rem;
+  }
+  .sim-card {
+    min-height: 420px;
+    padding: 1rem 0.75rem 3.75rem;
+  }
+  .sim-heading {
+    font-size: 1.15rem;
+  }
+  .sim-text {
+    font-size: 0.825rem;
+  }
+  .hero-quick-install code {
+    font-size: 0.75rem;
+  }
 }

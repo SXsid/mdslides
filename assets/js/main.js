@@ -73,12 +73,55 @@ function initClipboardCopy() {
   });
 }
 
+function initMobileNav() {
+  const menuBtn = document.getElementById("mobile-menu-btn");
+  const drawer = document.getElementById("mobile-nav-drawer");
+  if (!menuBtn || !drawer) return;
+
+  function toggleMenu(forceOpen) {
+    const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !drawer.classList.contains("is-open");
+    drawer.classList.toggle("is-open", shouldOpen);
+    drawer.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+    menuBtn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+    menuBtn.classList.toggle("active", shouldOpen);
+  }
+
+  menuBtn.addEventListener("click", () => toggleMenu());
+
+  // Close drawer when any nav link is tapped
+  drawer.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => toggleMenu(false));
+  });
+
+  // Close drawer on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")) {
+      toggleMenu(false);
+    }
+  });
+
+  // Close drawer on clicking outside
+  document.addEventListener("click", (e) => {
+    if (drawer.classList.contains("is-open") && !e.target.closest("header")) {
+      toggleMenu(false);
+    }
+  });
+
+  // Close on resize back to desktop viewport
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768 && drawer.classList.contains("is-open")) {
+      toggleMenu(false);
+    }
+  });
+}
+
 // Initialize all components when DOM is ready
 function boot() {
   if (typeof window.initTheme === "function") window.initTheme();
   if (typeof window.initSimulator === "function") window.initSimulator();
   if (typeof window.initInstaller === "function") window.initInstaller();
   initClipboardCopy();
+  initMobileNav();
 }
 
 if (document.readyState === "loading") {
